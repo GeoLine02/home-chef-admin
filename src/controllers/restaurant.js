@@ -127,8 +127,8 @@ const setActiveHours = async (req, res) => {
       const minutes = data.getMinutes();
       return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
     });
-    const [activeFrom, activeTo] = timeStemp;
-    await restaurantService.setActiveHours(activeFrom, activeTo);
+    const [workingFrom, workingTill] = timeStemp;
+    await restaurantService.setActiveHours(workingFrom, workingTill);
     res.status(200).json({ message: "active hours set successfully" });
   } catch (error) {
     throw error;

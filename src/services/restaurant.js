@@ -117,11 +117,10 @@ async function setWorkingDays(workingDays) {
   }
 }
 
-async function setActiveHours(activeFrom, activeTo) {
+async function setActiveHours(workingFrom, workingTill) {
   try {
-    activeFrom;
-    const query = `INSERT INTO "Restaurants" (activeFrom, activeTo) VALUES (${activeFrom}, ${activeTo})`;
-    const res = await pool.query(query, [activeFrom, activeTo]);
+    const query = `INSERT INTO "RestaurantSettings" (workingFrom, workingTill) VALUES (${workingFrom}, ${workingTill})`;
+    const res = await pool.query(query, [activeFrom, activeTill]);
     return res.rows;
   } catch (error) {
     throw error;
