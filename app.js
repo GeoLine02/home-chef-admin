@@ -14,6 +14,8 @@ app.use(cors());
 const restaurantRoutes = require("./src/routes/restaurantRoutes");
 const restaurantTypesRoutes = require("./src/routes/restaurant.types.routes");
 const productsRotues = require("./src/routes/pdocuts.routes");
+const restaurantSettingsRoutes = require("./src/routes/restaurant.settings.routes");
+
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
@@ -24,6 +26,7 @@ app.use(
 app.use("/restaurant", restaurantRoutes);
 app.use("/restaurantTypes", restaurantTypesRoutes);
 app.use("/products", productsRotues);
+app.use("/restaurantSettings", restaurantSettingsRoutes);
 app.use("/static", express.static("public"));
 
 app.post("/uploads/restaurants", uplaod.single("file"), (req, res) => {
