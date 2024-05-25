@@ -18,7 +18,5 @@ router.post(
 );
 router.put("/status/:id", restaurantController.changeRestaurantStatus);
 router.post("/search", restaurantController.searchRestaurantByName);
-router.post("/setWorkingDays", restaurantController.setWorkingDays);
-router.post("/setActiveHours", restaurantController.setActiveHours);
 
 module.exports = router;
