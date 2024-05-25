@@ -97,26 +97,6 @@ async function createRestaurant({
   }
 }
 
-async function changeRestaurantStatus(isActive, restaurantId) {
-  try {
-    const query = `UPDATE "Restaurants" SET "isActive" = $1 WHERE id = $2`;
-    const res = await pool.query(query, [isActive, restaurantId]);
-    return res.rows;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function setWorkingDays(workingDays) {
-  try {
-    const query = `INSERT INTO "Restaurants" (workingDays) VALUES (${workingDays})`;
-    const res = await pool.query(query, [workingDays]);
-    return res.rows;
-  } catch (error) {
-    throw error;
-  }
-}
-
 module.exports = {
   getAllRestaurants,
   createRestaurant,
@@ -124,6 +104,4 @@ module.exports = {
   getRestaurantByID,
   deleteRestaurantByID,
   updateRestaurantByID,
-  changeRestaurantStatus,
-  setWorkingDays,
 };

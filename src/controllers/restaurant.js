@@ -86,34 +86,12 @@ const createRestaurant = async (req, res) => {
   }
 };
 
-const changeRestaurantStatus = async (req, res) => {
-  try {
-    const restaurantID = req.params.id;
-
-    const { isActive } = req.body;
-    await restaurantService.changeRestaurantStatus(isActive, restaurantID);
-    res.status(201).json({ message: "restaurant status changed succesfully" });
-  } catch (error) {
-    throw error;
-  }
-};
-
 const searchRestaurantByName = async (req, res) => {
   try {
     const restaurantName = req.body.name;
     const searchedRestaurant =
       await restaurantService.searchRestaurantByName(restaurantName);
     res.status(200).json(searchedRestaurant);
-  } catch (error) {
-    throw error;
-  }
-};
-
-const setWorkingDays = async (req, res) => {
-  try {
-    const wokringDays = req.body;
-    await restaurantService.setWorkingDays(wokringDays);
-    res.status(200).json({ message: "working days set successfully" });
   } catch (error) {
     throw error;
   }
@@ -126,6 +104,4 @@ module.exports = {
   deleteRestaurantByID,
   updateRestaurantByID,
   searchRestaurantByName,
-  changeRestaurantStatus,
-  setWorkingDays,
 };
