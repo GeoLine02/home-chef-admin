@@ -127,6 +127,5 @@ module.exports = {
   updateRestaurantByID,
   searchRestaurantByName,
   changeRestaurantStatus,
-  setActiveHours,
   setWorkingDays,
 };

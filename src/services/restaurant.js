@@ -117,16 +117,6 @@ async function setWorkingDays(workingDays) {
   }
 }
 
-async function setActiveHours(workingFrom, workingTill) {
-  try {
-    const query = `INSERT INTO "RestaurantSettings" (workingFrom, workingTill) VALUES (${workingFrom}, ${workingTill})`;
-    const res = await pool.query(query, [activeFrom, activeTill]);
-    return res.rows;
-  } catch (error) {
-    throw error;
-  }
-}
-
 module.exports = {
   getAllRestaurants,
   createRestaurant,
@@ -135,6 +125,5 @@ module.exports = {
   deleteRestaurantByID,
   updateRestaurantByID,
   changeRestaurantStatus,
-  setActiveHours,
   setWorkingDays,
 };
