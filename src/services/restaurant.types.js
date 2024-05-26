@@ -10,11 +10,13 @@ async function getRestaurantTypes() {
   }
 }
 
-async function chooseRestaurantTypes(typeName) {
+async function setRestaurantTypes(restaurantId, types) {
   try {
-    const query = `SELECT * FROM "RestaurantTypes" WHERE typeName = $1`;
-    const choosenRestaurantTypes = await pool.query(query, [typeName]);
-    return choosenRestaurantTypes.rows;
+    const query = `INSERT INTO "RestaurantTypesJunctions" (restaurantID, typeID) VALUES (${(restaurantId, typeID)})`;
+    types.map(async (type) => {
+      const restaurantType = await pool.query(query, [restaurantId, type]);
+      return restaurantType.rows;
+    });
   } catch (error) {
     throw error;
   }
@@ -22,4 +24,5 @@ async function chooseRestaurantTypes(typeName) {
 
 module.exports = {
   getRestaurantTypes,
+  setRestaurantTypes,
 };
