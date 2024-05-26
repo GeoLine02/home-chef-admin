@@ -26,6 +26,15 @@ const setWorkingDays = async (req, res) => {
   }
 };
 
+const getWorkingDays = async (req, res) => {
+  try {
+    const workingDays = await restaurantService.getWorkingDays();
+    res.status(200).json(workingDays);
+  } catch (error) {
+    throw error;
+  }
+};
+
 const changeRestaurantStatus = async (req, res) => {
   try {
     const restaurantID = req.params.id;
@@ -41,5 +50,6 @@ const changeRestaurantStatus = async (req, res) => {
 module.exports = {
   setActiveHours,
   setWorkingDays,
+  getWorkingDays,
   changeRestaurantStatus,
 };
