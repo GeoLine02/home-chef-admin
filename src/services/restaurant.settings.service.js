@@ -20,9 +20,19 @@ async function setWorkingDays(workingDays) {
   }
 }
 
+async function getWorkingDays() {
+  try {
+    const query = `SELECT * FROM "RestaurantWorkingDays"`;
+    const res = await pool.query(query);
+    return res.rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function changeRestaurantStatus(isActive, restaurantId) {
   try {
-    const query = `UPDATE "Restaurants" SET "isActive" = $1 WHERE id = $2`;
+    const query = `UPDATE "RestaurantSettings" SET "isRestaurantActive" = $1 WHERE id = $2`;
     const res = await pool.query(query, [isActive, restaurantId]);
     return res.rows;
   } catch (error) {
@@ -33,5 +43,6 @@ async function changeRestaurantStatus(isActive, restaurantId) {
 module.exports = {
   setActiveHours,
   setWorkingDays,
+  getWorkingDays,
   changeRestaurantStatus,
 };
