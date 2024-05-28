@@ -16,7 +16,6 @@ router.post(
   uplaod.single("file"),
   restaurantController.createRestaurant
 );
-router.put("/status/:id", restaurantController.changeRestaurantStatus);
 router.post("/search", restaurantController.searchRestaurantByName);
 
 module.exports = router;
