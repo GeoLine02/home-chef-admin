@@ -81,7 +81,7 @@ async function createRestaurant({
   img,
 }) {
   try {
-    const query = `INSERT INTO "Restaurants" (name, address, city, email, phoneNumber, ownerId, img) VALUES (${name}, ${address}, ${city}, ${email}, ${phoneNumber}, ${phoneNumber}, ${ownerId}, ${img}) `;
+    const query = `INSERT INTO "Restaurants" (name, address, city, email, "phoneNumber", "ownerId", img) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
     const res = await pool.query(query, [
       name,
       address,
@@ -91,7 +91,7 @@ async function createRestaurant({
       ownerId,
       img,
     ]);
-    return res.rows;
+    return res.rows[0];
   } catch (error) {
     throw error;
   }
