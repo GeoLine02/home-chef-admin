@@ -1,9 +1,13 @@
 const pool = require("../db/index");
 
-async function setActiveHours(workingFrom, workingTill) {
+async function setActiveHours(restaurantID, workingFrom, workingTill) {
   try {
-    const query = `INSERT INTO "RestaurantSettings" (workingFrom, workingTill) VALUES (${workingFrom}, ${workingTill})`;
-    const res = await pool.query(query, [activeFrom, activeTill]);
+    const query = `INSERT INTO "RestaurantSettings" ("restaurantID", "workingFrom", "workingTill") VALUES ($1, $2, $3)`;
+    const res = await pool.query(query, [
+      restaurantID,
+      workingFrom,
+      workingTill,
+    ]);
     return res.rows;
   } catch (error) {
     throw error;
@@ -12,7 +16,7 @@ async function setActiveHours(workingFrom, workingTill) {
 
 async function setWorkingDays(workingDays) {
   try {
-    const query = `INSERT INTO "Restaurants" (workingDays) VALUES (${workingDays})`;
+    const query = `INSERT INTO "Restaurants" ("workingDays") VALUES (${workingDays})`;
     const res = await pool.query(query, [workingDays]);
     return res.rows;
   } catch (error) {

@@ -1,5 +1,5 @@
 const restaurantService = require("../services/restaurant");
-
+const restaurantSettingsService = require("../services/restaurant.settings.service");
 const getAllRestaurants = async (req, res) => {
   try {
     const restaurants = await restaurantService.getAllRestaurants();
@@ -63,13 +63,23 @@ const updateRestaurantByID = async (req, res) => {
 
 const createRestaurant = async (req, res) => {
   try {
-    let { name, address, city, email, phoneNumber, ownerId } = req.body;
+    let {
+      name,
+      address,
+      city,
+      email,
+      phoneNumber,
+      ownerId,
+      workingFrom,
+      workingTill,
+      isRestaurantActive,
+    } = req.body;
     img =
       req.protocol +
       "://" +
       req.get("host") +
       "/static/images/" +
-      req.file.filename;
+      req?.file?.filename;
 
     const createdRestaurant = await restaurantService.createRestaurant({
       name,
@@ -80,6 +90,22 @@ const createRestaurant = async (req, res) => {
       ownerId,
       img,
     });
+
+    if (createdRestaurant) {
+      await Promise.all([
+        restaurantSettingsService.setActiveHours(
+          createdRestaurant.id,
+          workingFrom,
+          workingTill
+        ),
+        restaurantSettingsService.changeRestaurantStatus(
+          isRestaurantActive,
+          createdRestaurant.id
+        ),
+      ]);
+    }
+    console.log("createRestaurant", createdRestaurant);
+
     res.status(201).json(createdRestaurant);
   } catch (error) {
     throw error;
