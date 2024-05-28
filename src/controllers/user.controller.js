@@ -49,9 +49,20 @@ const updateUserByID = async (req, res) => {
   }
 };
 
+const updateUserStatus = async (req, res) => {
+  try {
+    const { userID, isUSerActive } = req.body;
+    await userService.updateUserStatus(isUSerActive, userID);
+    res.status(200).json({ message: "user changed succesfully" });
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUserByID,
   deleteUserByID,
   updateUserByID,
+  updateUserStatus,
 };

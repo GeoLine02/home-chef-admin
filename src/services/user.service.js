@@ -57,9 +57,20 @@ async function updateUserByID(
   }
 }
 
+async function updateUserStatus(isUserActive, userID) {
+  try {
+    const query = `UPDATE "Users" SET "isAccountActive" = $1 WHERE id = $2`;
+    const res = await pool.query(query, [isUserActive, userID]);
+    return res.rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getAllUsers,
   getUserByID,
   deleteUserByID,
   updateUserByID,
+  updateUserStatus,
 };
