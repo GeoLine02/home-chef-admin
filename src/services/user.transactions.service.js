@@ -10,6 +10,17 @@ async function getAllTransactions() {
   }
 }
 
+async function getTransactionById(id) {
+  try {
+    const query = `SELECT * FROM "PaymentTransactions" WHERE id = $1`;
+    const transactionById = await pool.query(query, [id]);
+    return transactionById.rows[0];
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getAllTransactions,
+  getTransactionById,
 };
