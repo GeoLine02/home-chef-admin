@@ -31,6 +31,7 @@ app.use("/products", productsRotues);
 app.use("/restaurantSettings", restaurantSettingsRoutes);
 app.use("/users", userRouts);
 app.use("/static", express.static("public"));
+
 app.use("/userTranasctions", userTransactionsRoutes);
 
 app.post("/uploads/restaurants", uplaod.single("file"), (req, res) => {
