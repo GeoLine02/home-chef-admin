@@ -16,6 +16,7 @@ const restaurantTypesRoutes = require("./src/routes/restaurant.types.routes");
 const productsRotues = require("./src/routes/pdocuts.routes");
 const restaurantSettingsRoutes = require("./src/routes/restaurant.settings.routes");
 const userRouts = require("./src/routes/users.routes");
+const userTransactionsRoutes = require("./src/routes/user.transactions.routes");
 
 app.use(bodyParser.json());
 app.use(
@@ -30,6 +31,8 @@ app.use("/products", productsRotues);
 app.use("/restaurantSettings", restaurantSettingsRoutes);
 app.use("/users", userRouts);
 app.use("/static", express.static("public"));
+
+app.use("/userTranasctions", userTransactionsRoutes);
 
 app.post("/uploads/restaurants", uplaod.single("file"), (req, res) => {
   console.log("123123123123123123123", req.file.path);
