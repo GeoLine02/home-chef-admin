@@ -15,16 +15,15 @@ const getAllTransactions = async (req, res) => {
 
 const getTransactionById = async (req, res) => {
   try {
-    const { id } = req.body;
+    const userId = req.params.id;
+    if (!userId) {
+      res.status(404).send(`user with ID${userId} does not exist`);
+    }
     const transactionById =
-      await userTransactionsService.getTransactionById(id);
+      await userTransactionsService.getTransactionById(userId);
     res.status(200).json(transactionById);
   } catch (error) {
-    if (res.status(404)) {
-      res.json({ message: `transaction with ${id} does not exists` });
-    } else if (res.status(500)) {
-      res.json({ message: "internal server error" });
-    }
+    res.status(500).send("internal server error");
   }
 };
 
