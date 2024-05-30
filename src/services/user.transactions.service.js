@@ -10,11 +10,11 @@ async function getAllTransactions() {
   }
 }
 
-async function getTransactionById(id) {
+async function getTransactionById(userId) {
   try {
-    const query = `SELECT * FROM "PaymentTransactions" WHERE id = $1`;
-    const transactionById = await pool.query(query, [id]);
-    return transactionById.rows[0];
+    const query = `SELECT * FROM "PaymentTransactions" WHERE "userId" = $1`;
+    const transactionById = await pool.query(query, [userId]);
+    return transactionById.rows;
   } catch (error) {
     throw error;
   }
