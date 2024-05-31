@@ -16,6 +16,17 @@ const setActiveHours = async (req, res) => {
   }
 };
 
+const deleteActiveHours = async (req, res) => {
+  try {
+    const { restaurantId } = req.body;
+    await restaurantService.deleteActiveHours(restaurantId);
+    res.status(200).send("active hours deleted successfuly");
+  } catch (error) {
+    res.status(500).send("internal server error");
+    throw error;
+  }
+};
+
 const setWorkingDays = async (req, res) => {
   try {
     const wokringDays = req.body;
@@ -35,6 +46,23 @@ const getWorkingDays = async (req, res) => {
   }
 };
 
+const deleteWorkingDaysJunctions = async (req, res) => {
+  try {
+    const { restaurantId } = req.body;
+    await restaurantService.deleteWorkingDaysJunctions(restaurantId);
+    if (restaurantId) {
+      res.status(200).send("working days jucntiosn deleted successfuly");
+    } else {
+      res
+        .status(404)
+        .send(`working days with restaurantID ${restaurantId} does not exist`);
+    }
+  } catch (error) {
+    res.status(500).send("internal server error");
+    throw error;
+  }
+};
+
 const changeRestaurantStatus = async (req, res) => {
   try {
     const restaurantID = req.params.id;
@@ -49,7 +77,9 @@ const changeRestaurantStatus = async (req, res) => {
 
 module.exports = {
   setActiveHours,
+  deleteActiveHours,
   setWorkingDays,
   getWorkingDays,
+  deleteWorkingDaysJunctions,
   changeRestaurantStatus,
 };
