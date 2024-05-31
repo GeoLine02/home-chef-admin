@@ -19,7 +19,19 @@ const ChooseRestaurantTypes = async (req, res) => {
   }
 };
 
+const deleteRestauarntTypesJucntions = async (req, res) => {
+  try {
+    const { restaurantID } = req.body;
+    await restaurantTypesServices.deleteRestaurantTypesJucntions(restaurantID);
+    res.status(200).send("types junctions deleted successfuly");
+  } catch (error) {
+    res.status(500).send("internal server error");
+    throw error;
+  }
+};
+
 module.exports = {
   getAllRestaurantTypes,
   ChooseRestaurantTypes,
+  deleteRestauarntTypesJucntions,
 };
