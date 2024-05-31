@@ -6,5 +6,13 @@ router.post("/setWorkingHours", restaurantSettingsController.setActiveHours);
 router.post("/setWorkingDays", restaurantSettingsController.setWorkingDays);
 router.get("/", restaurantSettingsController.getWorkingDays);
 router.post("/setActiveHours", restaurantSettingsController.setActiveHours);
+router.delete(
+  "/delete/workingDays",
+  restaurantSettingsController.deleteWorkingDaysJunctions
+);
+router.delete(
+  "/delete/activeHours",
+  restaurantSettingsController.deleteActiveHours
+);
 
 module.exports = router;
