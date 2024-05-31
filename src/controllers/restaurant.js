@@ -1,5 +1,6 @@
 const restaurantService = require("../services/restaurant");
 const restaurantSettingsService = require("../services/restaurant.settings.service");
+const restaurantTypesService = require("../services/restaurant.types");
 const getAllRestaurants = async (req, res) => {
   try {
     const restaurants = await restaurantService.getAllRestaurants();
@@ -29,13 +30,18 @@ const deleteRestaurantByID = async (req, res) => {
     const restaurantID = req.params.id;
     const deletedRestaurant =
       await restaurantService.deleteRestaurantByID(restaurantID);
-    if (!deletedRestaurant) {
-      res.status(404).json({ error: "Restaurant not found" });
+
+    if (deletedRestaurant) {
+      Promise.all([
+        restaurantTypesService.deleteRestaurantTypesJucntions(restaurantID),
+        restaurantSettingsService.deleteActiveHours(restaurantID),
+        restaurantSettingsService.deleteWorkingDaysJunctions(restaurantID),
+      ]);
     } else {
-      res.json(deletedRestaurant);
+      res.status(404).send("restaurant does not exists");
     }
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -102,6 +108,7 @@ const createRestaurant = async (req, res) => {
           isRestaurantActive,
           createdRestaurant.id
         ),
+        restaurantSettingsService.setWorkingDays(createdRestaurant.id),
       ]);
     }
     console.log("createRestaurant", createdRestaurant);
