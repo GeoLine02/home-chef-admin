@@ -16,7 +16,7 @@ async function setActiveHours(restaurantID, workingFrom, workingTill) {
 
 async function deleteActiveHours(restaurantID) {
   try {
-    const query = `DELETE FROM "RestaurantSettings" WHERE "restaurantID = $1`;
+    const query = `DELETE FROM "RestaurantSettings" WHERE "restaurantID" = $1`;
     const res = await pool.query(query, [restaurantID]);
     return res.rows;
   } catch (error) {

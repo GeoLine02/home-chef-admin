@@ -1,6 +1,5 @@
 const restaurantService = require("../services/restaurant");
 const restaurantSettingsService = require("../services/restaurant.settings.service");
-const restaurantTypesService = require("../services/restaurant.types");
 const getAllRestaurants = async (req, res) => {
   try {
     const restaurants = await restaurantService.getAllRestaurants();
@@ -33,15 +32,16 @@ const deleteRestaurantByID = async (req, res) => {
 
     if (deletedRestaurant) {
       Promise.all([
-        restaurantTypesService.deleteRestaurantTypesJucntions(restaurantID),
         restaurantSettingsService.deleteActiveHours(restaurantID),
         restaurantSettingsService.deleteWorkingDaysJunctions(restaurantID),
       ]);
+      res.status(200).send("restaurant deleted successfuly");
     } else {
       res.status(404).send("restaurant does not exists");
     }
   } catch (error) {
     res.status(500).send("internal server error");
+    throw error;
   }
 };
 

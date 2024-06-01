@@ -24,7 +24,7 @@ async function setRestaurantTypes(restaurantId, types) {
 
 async function deleteRestaurantTypesJucntions(restaurantId) {
   try {
-    const query = `DELETE FROM "RestaurantTypesJucntions" WHERE restaurantID = $1`;
+    const query = `DELETE FROM "RestaurantTypesJunctions" WHERE "restaurantID" = $1`;
     const deletedTypeJucntion = await pool.query(query, [restaurantId]);
     return deletedTypeJucntion.rows;
   } catch (error) {
