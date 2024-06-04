@@ -14,6 +14,20 @@ async function setActiveHours(restaurantID, workingFrom, workingTill) {
   }
 }
 
+async function updateWorkingHours(restaurantID, workingFrom, workingTill) {
+  try {
+    const query = `UPDATE "RestaurantSettings" SET ("workingFrom" = $2, "workingTill" = $3) WHERE restaurantID = $1`;
+    const res = await pool.query(query, [
+      restaurantID,
+      workingFrom,
+      workingTill,
+    ]);
+    return res.rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function deleteActiveHours(restaurantID) {
   try {
     const query = `DELETE FROM "RestaurantSettings" WHERE "restaurantID" = $1`;
@@ -66,6 +80,7 @@ async function changeRestaurantStatus(isActive, restaurantId) {
 
 module.exports = {
   setActiveHours,
+  updateWorkingHours,
   deleteActiveHours,
   setWorkingDays,
   getWorkingDays,
