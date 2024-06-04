@@ -55,7 +55,7 @@ const updateRestaurantByID = async (req, res) => {
       "://" +
       req.get("host") +
       "/static/images/" +
-      req.file.filename;
+      req?.file?.filename;
 
     const updatedRestaurant = await restaurantService.updateRestaurantByID(
       restaurantID,
@@ -108,7 +108,7 @@ const createRestaurant = async (req, res) => {
           isRestaurantActive,
           createdRestaurant.id
         ),
-        restaurantSettingsService.setWorkingDays(createdRestaurant.id),
+        // restaurantSettingsService.setWorkingDays(createdRestaurant.id),
       ]);
     }
     console.log("createRestaurant", createdRestaurant);

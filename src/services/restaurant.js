@@ -81,7 +81,7 @@ async function createRestaurant({
   img,
 }) {
   try {
-    const query = `INSERT INTO "Restaurants" (name, address, city, email, "phoneNumber", "ownerId", img) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
+    const query = `INSERT INTO "Restaurants" (name, address, city, email, "phoneNumber", "ownerId", img) VALUES ($1, $2, $3, $4, $5, $6, $7)`;
     const res = await pool.query(query, [
       name,
       address,
