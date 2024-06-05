@@ -14,15 +14,9 @@ async function setActiveHours(restaurantID, workingFrom, workingTill) {
   }
 }
 
-<<<<<<< HEAD
 async function updateActiveHours(restaurantID, workingFrom, workingTill) {
   try {
     const query = `UPDATE "RestaurantSettings" SET "workingFrom" = $2, workinTill = $3, WHERE "restaurantID" = $1`;
-=======
-async function updateWorkingHours(restaurantID, workingFrom, workingTill) {
-  try {
-    const query = `UPDATE "RestaurantSettings" SET ("workingFrom" = $2, "workingTill" = $3) WHERE restaurantID = $1`;
->>>>>>> main
     const res = await pool.query(query, [
       restaurantID,
       workingFrom,
@@ -56,11 +50,7 @@ async function changeRestaurantStatus(isActive, restaurantId) {
 
 module.exports = {
   setActiveHours,
-<<<<<<< HEAD
   updateActiveHours,
-=======
-  updateWorkingHours,
->>>>>>> main
   deleteActiveHours,
   changeRestaurantStatus,
 };
