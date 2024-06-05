@@ -14,9 +14,9 @@ async function setActiveHours(restaurantID, workingFrom, workingTill) {
   }
 }
 
-async function updateWorkingHours(restaurantID, workingFrom, workingTill) {
+async function updateActiveHours(restaurantID, workingFrom, workingTill) {
   try {
-    const query = `UPDATE "RestaurantSettings" SET ("workingFrom" = $2, "workingTill" = $3) WHERE restaurantID = $1`;
+    const query = `UPDATE "RestaurantSettings" SET "workingFrom" = $2, workinTill = $3, WHERE "restaurantID" = $1`;
     const res = await pool.query(query, [
       restaurantID,
       workingFrom,
@@ -38,36 +38,6 @@ async function deleteActiveHours(restaurantID) {
   }
 }
 
-async function setWorkingDays(workingDays) {
-  try {
-    const query = `INSERT INTO "Restaurants" ("workingDays") VALUES ($1)`;
-    const res = await pool.query(query, [workingDays]);
-    return res.rows;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function getWorkingDays() {
-  try {
-    const query = `SELECT * FROM "RestaurantWorkingDays"`;
-    const res = await pool.query(query);
-    return res.rows;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function deleteWorkingDaysJunctions(restaurantId) {
-  try {
-    const query = `DELETE FROM "RestaurantWorkingDaysJunctions" WHERE "restaurantID" = $1`;
-    const res = await pool.query(query, [restaurantId]);
-    return res.rows;
-  } catch (error) {
-    throw error;
-  }
-}
-
 async function changeRestaurantStatus(isActive, restaurantId) {
   try {
     const query = `UPDATE "RestaurantSettings" SET "isRestaurantActive" = $1 WHERE id = $2`;
@@ -80,10 +50,7 @@ async function changeRestaurantStatus(isActive, restaurantId) {
 
 module.exports = {
   setActiveHours,
-  updateWorkingHours,
+  updateActiveHours,
   deleteActiveHours,
-  setWorkingDays,
-  getWorkingDays,
-  deleteWorkingDaysJunctions,
   changeRestaurantStatus,
 };
