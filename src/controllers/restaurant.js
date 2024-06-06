@@ -192,7 +192,7 @@ const searchRestaurantByName = async (req, res) => {
       await restaurantService.searchRestaurantByName(restaurantName);
     res.status(200).json(searchedRestaurant);
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 

@@ -5,7 +5,7 @@ const getAllRestaurantTypes = async (req, res) => {
     const restaurantTypes = await restaurantTypesServices.getRestaurantTypes();
     res.status(200).json(restaurantTypes);
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -15,7 +15,7 @@ const ChooseRestaurantTypes = async (req, res) => {
       await restaurantTypesServices.getRestaurantTypes();
     res.status(200).json(choosenRestaurantTypes);
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -26,7 +26,6 @@ const deleteRestauarntTypesJucntions = async (req, res) => {
     res.status(200).send("types junctions deleted successfuly");
   } catch (error) {
     res.status(500).send("internal server error");
-    throw error;
   }
 };
 

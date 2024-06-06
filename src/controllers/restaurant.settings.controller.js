@@ -6,7 +6,7 @@ const setActiveHours = async (req, res) => {
     await restaurantSettingsService.setActiveHours(workingFrom, workingTill);
     res.status(200).json({ message: "active hours set successfully" });
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -51,7 +51,6 @@ const deleteActiveHours = async (req, res) => {
     res.status(200).send("active hours deleted successfuly");
   } catch (error) {
     res.status(500).send("internal server error");
-    throw error;
   }
 };
 
@@ -66,7 +65,7 @@ const changeRestaurantStatus = async (req, res) => {
     );
     res.status(201).json({ message: "restaurant status changed succesfully" });
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 

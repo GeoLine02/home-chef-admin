@@ -25,7 +25,6 @@ const setWorkingDays = async (req, res) => {
     return res.status(201).send("working days set successfuly");
   } catch (e) {
     res.status(500).send("internal server error");
-    throw e;
   }
 };
 

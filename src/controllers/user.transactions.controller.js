@@ -5,11 +5,7 @@ const getAllTransactions = async (req, res) => {
     const allTransactions = await userTransactionsService.getAllTransactions();
     res.status(200).json(allTransactions);
   } catch (error) {
-    if (res.status(404)) {
-      res.json({ message: "failed to fetch transactions data" });
-    } else if (res.status(500)) {
-      res.json({ message: "internal server error" });
-    }
+    res.status(500).send("internal server error");
   }
 };
 
@@ -24,7 +20,6 @@ const getTransactionById = async (req, res) => {
     res.status(200).json(transactionById);
   } catch (error) {
     res.status(500).send("internal server error");
-    throw error;
   }
 };
 

@@ -5,7 +5,7 @@ const getAllUsers = async (req, res) => {
     const allUsers = await userService.getAllUsers();
     res.status(200).json(allUsers);
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -15,7 +15,7 @@ const getUserByID = async (req, res) => {
     const userByID = await userService.getUserByID(userID);
     res.status(200).json(userByID);
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -33,7 +33,6 @@ const deleteUserByID = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send("internal server error");
-    throw error;
   }
 };
 
@@ -53,7 +52,7 @@ const updateUserByID = async (req, res) => {
     );
     res.status(200).json(updatedUser);
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -63,7 +62,7 @@ const updateUserStatus = async (req, res) => {
     await userService.updateUserStatus(isUSerActive, userID);
     res.status(200).json({ message: "user changed succesfully" });
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 

@@ -5,7 +5,7 @@ const getAllProducts = async (req, res) => {
     const AllProducts = await productSeriveces.getAllProducts();
     res.status(200).json(AllProducts);
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -15,7 +15,7 @@ const getProductByID = async (req, res) => {
     const productByID = await productSeriveces.getProductByID(restaurnatId);
     res.status(200).json(productByID);
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -47,7 +47,7 @@ const createProduct = async (req, res) => {
     });
     res.status(200).json({ message: "product created succesfully" });
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -82,14 +82,18 @@ const updateProductById = async (req, res) => {
     );
     res.status(200).json(upadetedProduct);
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
 const deleteProductByID = async (req, res) => {
-  const productID = req.params.id;
-  await productSeriveces.deleteProductByID(productID);
-  res.status(200).json({ message: "restaurant deleted succesfully" });
+  try {
+    const productID = req.params.id;
+    await productSeriveces.deleteProductByID(productID);
+    res.status(200).json({ message: "restaurant deleted succesfully" });
+  } catch (e) {
+    res.status(500).send("internal server error");
+  }
 };
 
 module.exports = {
