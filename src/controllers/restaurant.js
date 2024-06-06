@@ -22,7 +22,7 @@ const getRestaurantById = async (req, res) => {
       res.json(restaurantById);
     }
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -31,6 +31,12 @@ const deleteRestaurantByID = async (req, res) => {
     const restaurantID = req.params.id;
     const deletedRestaurant =
       await restaurantService.deleteRestaurantByID(restaurantID);
+
+    if (!restaurantID) {
+      res
+        .status(400)
+        .json({ message: `restaurant with id ${restaurantID} does not exist` });
+    }
 
     if (deletedRestaurant) {
       Promise.all([
@@ -43,7 +49,6 @@ const deleteRestaurantByID = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send("internal server error");
-    throw error;
   }
 };
 
@@ -63,19 +68,34 @@ const updateRestaurantByID = async (req, res) => {
       workingTill,
     } = req.body;
 
-    img =
-      req.protocol +
-      "://" +
-      req.get("host") +
-      "/static/images/" +
-      req?.file?.filename;
+    if (!workingFrom || !workingTill) {
+      res.status(400).json({ message: "working Hours filds are missing" });
+    } else if (workingFrom >= workingTill) {
+      res.status(400).json({ message: "invalide working hours values" });
+    }
+
+    if (!img) {
+      img = null;
+    } else {
+      img =
+        req.protocol +
+        "://" +
+        req.get("host") +
+        "/static/images/" +
+        req?.file?.filename;
+    }
 
     const updatedRestaurant = await restaurantService.updateRestaurantByID(
       restaurantID,
       { name, address, city, email, phoneNumber, ownerId, img }
     );
 
-    if (updatedRestaurant) {
+    if (
+      workingFrom &&
+      workingTill &&
+      workingFrom < workingTill &&
+      updatedRestaurant
+    ) {
       await Promise.all([
         restaurantWorkingDaysService.updateWorkingDays(
           restaurantID,
@@ -87,10 +107,10 @@ const updateRestaurantByID = async (req, res) => {
           workingTill
         ),
       ]);
+      res.status(201).json(updatedRestaurant);
     }
-    res.status(201).json(updatedRestaurant);
   } catch (error) {
-    throw error;
+    res.status(500).send("internal server error");
   }
 };
 
@@ -158,9 +178,8 @@ const createRestaurant = async (req, res) => {
           workingDays
         ),
       ]);
+      res.status(201).json(createdRestaurant);
     }
-
-    res.status(201).json(createdRestaurant);
   } catch (error) {
     res.status(500).send("internal server error");
   }
