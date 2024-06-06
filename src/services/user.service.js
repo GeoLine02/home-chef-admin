@@ -67,10 +67,22 @@ async function updateUserStatus(isUserActive, userID) {
   }
 }
 
+async function searchUserByID(userID) {
+  try {
+    const res = await pool.query(
+      `SELECT * FROM "Users" WHERE id LIKE '${userID}%'`
+    );
+    return res.rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getAllUsers,
   getUserByID,
   deleteUserByID,
   updateUserByID,
   updateUserStatus,
+  searchUserByID,
 };
