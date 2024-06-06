@@ -66,10 +66,28 @@ const updateUserStatus = async (req, res) => {
   }
 };
 
+const searchUserByID = async (req, res) => {
+  try {
+    const userID = req.params.id;
+    if (!userID) {
+      res
+        .status(404)
+        .json({ message: `user with id ${userID} does not exist` });
+    }
+    const searchUserByID = await userService.searchUserByID(userID);
+    if (searchUserByID) {
+      res.status(200).json(searchUserByID);
+    }
+  } catch (error) {
+    res.status(500).send("internal server error");
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUserByID,
   deleteUserByID,
   updateUserByID,
   updateUserStatus,
+  searchUserByID,
 };
