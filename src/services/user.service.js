@@ -38,17 +38,18 @@ async function deleteUserByID(userID, restaurantID) {
 }
 
 async function updateUserByID(
-  { email, firstName, lastName, phoneNumber, passowrd },
+  { email, firstName, lastName, phoneNumber, isAccountActive, role },
   userID
 ) {
   try {
-    const query = `UPDATE "Users" SET email = $1, firstName = 2$, lastName = 3$, phoneNumber = $4, password = $5 WHERE id = 6`;
+    const query = `UPDATE "Users" SET email = $1, "firstName" = $2, "lastName" = $3, "phoneNumber" = $4, "isAccountActive" = $5, role = $6 WHERE id = $7`;
     const res = await pool.query(query, [
       email,
       firstName,
       lastName,
       phoneNumber,
-      passowrd,
+      isAccountActive,
+      role,
       userID,
     ]);
     return res.rows;

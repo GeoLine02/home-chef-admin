@@ -38,20 +38,32 @@ const deleteUserByID = async (req, res) => {
 
 const updateUserByID = async (req, res) => {
   try {
-    const userID = req.parmas.id;
-    const { email, firstName, lastName, phoneNumber, password } = req.body;
+    const userID = req.params.id;
+    const { email, firstName, lastName, phoneNumber, isAccountActive, role } =
+      req.body;
+
+    if (!userID) {
+      res
+        .status(404)
+        .json({ message: `User with id ${userID} does not exist` });
+    } else if (!email || !firstName || !lastName || !phoneNumber || !role) {
+      res.status(400).json({ message: "user credentials are missing" });
+    }
+
     const updatedUser = await userService.updateUserByID(
       {
         email,
         firstName,
         lastName,
         phoneNumber,
-        password,
+        isAccountActive,
+        role,
       },
       userID
     );
     res.status(200).json(updatedUser);
   } catch (error) {
+    console.log(error);
     res.status(500).send("internal server error");
   }
 };
