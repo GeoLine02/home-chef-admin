@@ -1,5 +1,7 @@
 const userService = require("../services/user.service");
 const restaurantService = require("../services/restaurant");
+const restaurantTypesService = require("../services/restaurant.types");
+
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await userService.getAllUsers();
@@ -21,18 +23,19 @@ const getUserByID = async (req, res) => {
 
 const deleteUserByID = async (req, res) => {
   try {
-    const { userID, restaurantID } = req.body;
-    const deletedUser = await userService.deleteUserByID(userID, restaurantID);
-    if (!userID) {
-      res.status(404).send(`user with ${userID} does not exist`);
+    const userId = req.params.id;
+
+    if (!userId) {
+      res.status(404).send(`user with ${userId} does not exist`);
     }
 
+    const deletedUser = await userService.deleteUserByID(userId);
     if (deletedUser) {
-      await restaurantService.deleteRestaurantByID(restaurantID);
       res.status(200).json({ message: "user deleted successfuly" });
     }
   } catch (error) {
     res.status(500).send("internal server error");
+    console.log(error);
   }
 };
 
