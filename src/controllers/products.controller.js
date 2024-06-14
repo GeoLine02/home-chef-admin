@@ -12,6 +12,11 @@ const getAllProducts = async (req, res) => {
 const getProductByID = async (req, res) => {
   try {
     const restaurnatId = req.params.id;
+    if (restaurnatId) {
+      res.status(404).json({
+        message: `products for restaurant ${restaurnatId} does not exist`,
+      });
+    }
     const productByID = await productSeriveces.getProductByID(restaurnatId);
     res.status(200).json(productByID);
   } catch (error) {
@@ -30,12 +35,16 @@ const createProduct = async (req, res) => {
       productPrice,
     } = req.body;
 
-    productPhoto =
-      req.protocol +
-      "://" +
-      req.get("host") +
-      "/static/images/" +
-      req.file.filename;
+    if (!productPhoto) {
+      productPhoto = null;
+    } else {
+      productPhoto =
+        req.protocol +
+        "://" +
+        req.get("host") +
+        "/static/images/" +
+        req.file.filename;
+    }
 
     await productSeriveces.createProduct({
       restaurantID,
@@ -63,12 +72,22 @@ const updateProductById = async (req, res) => {
 
     const productID = req.params.id;
 
-    productPhoto =
-      req.protocol +
-      "://" +
-      req.get("host") +
-      "/static/images/" +
-      req.file.filename;
+    if (!productID) {
+      res
+        .status(404)
+        .json({ message: `product with id ${productID} does not exist` });
+    }
+
+    if (!productPhoto) {
+      productPhoto = null;
+    } else {
+      productPhoto =
+        req.protocol +
+        "://" +
+        req.get("host") +
+        "/static/images/" +
+        req.file.filename;
+    }
 
     const upadetedProduct = await productSeriveces.updateProductByID(
       productID,
