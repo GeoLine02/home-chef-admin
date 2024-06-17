@@ -1,13 +1,15 @@
 const pool = require("../db/index");
 
-async function getRestaurants(page, limit, restaurantName) {
+async function getRestaurants(page, limit, searchValue) {
   try {
-    const query = `SELECT * FROM "Restaurants" LIMIT $1 OFFSET $2`;
+    console.log("searchValue");
+    const query = `SELECT * FROM "Restaurants" WHERE name LIKE '%${searchValue}%' OFFSET $2 LIMIT $3;`;
     const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
+
     const offset = Number(page - 1) * limit;
 
     const [result, totalRecords] = await Promise.all([
-      pool.query(query, [limit, offset]),
+      pool.query(query, [searchValue, limit, offset]),
       pool.query(totalDataCount),
     ]);
     const totalPages = Math.ceil(totalRecords.rows[0].count / limit);
@@ -114,6 +116,39 @@ async function createRestaurant({
   }
 }
 
+async function filterRestaurants({ name, id }) {
+  console.log(name);
+  try {
+    let query = `SELECT * FROM "Restaurants" WHERE `;
+    if (!name && !id) {
+      return false;
+    }
+
+    const values = [];
+
+    if (name & id) {
+      query += "name = $1 AND id = $2";
+      values.push(name, +id);
+    } else if (name) {
+      query += `name ILIKE $1`;
+
+      values.push(name + "%");
+    } else if (id) {
+      query += "id = $1";
+      values.push(+id);
+    } else {
+      query = "SELECT * FROM Restaurants";
+    }
+    console.log("query", query);
+    console.log(values);
+    const res = await pool.query(query, values);
+    console.log(res);
+    return res.rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getRestaurants,
   createRestaurant,
@@ -121,4 +156,5 @@ module.exports = {
   getRestaurantByID,
   deleteRestaurantByID,
   updateRestaurantByID,
+  filterRestaurants,
 };
