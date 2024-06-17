@@ -2,7 +2,6 @@ const pool = require("../db/index");
 
 async function getRestaurants(page, limit, searchValue) {
   try {
-    console.log("searchValue");
     const query = `SELECT * FROM "Restaurants" WHERE name LIKE '%${searchValue}%' OFFSET $2 LIMIT $3;`;
     const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
 
@@ -44,7 +43,6 @@ async function searchRestaurantByName(restaurantName) {
     const res = await pool.query(
       `SELECT * FROM "Restaurants" WHERE name LIKE '${restaurantName}%'`
     );
-    console.log(res.rows);
     return res.rows;
   } catch (error) {
     throw error;
@@ -117,7 +115,6 @@ async function createRestaurant({
 }
 
 async function filterRestaurants({ name, id }) {
-  console.log(name);
   try {
     let query = `SELECT * FROM "Restaurants" WHERE `;
     if (!name && !id) {
@@ -131,7 +128,6 @@ async function filterRestaurants({ name, id }) {
       values.push(name, +id);
     } else if (name) {
       query += `name ILIKE $1`;
-
       values.push(name + "%");
     } else if (id) {
       query += "id = $1";
@@ -139,10 +135,7 @@ async function filterRestaurants({ name, id }) {
     } else {
       query = "SELECT * FROM Restaurants";
     }
-    console.log("query", query);
-    console.log(values);
     const res = await pool.query(query, values);
-    console.log(res);
     return res.rows;
   } catch (error) {
     throw error;

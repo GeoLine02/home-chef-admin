@@ -17,7 +17,6 @@ const getRestaurants = async (req, res) => {
 const filterRestaurants = async (req, res) => {
   try {
     const queryParams = req.query;
-    console.log("params", queryParams);
     const filteredRestaurants =
       await restaurantService.filterRestaurants(queryParams);
     res.status(200).json(filteredRestaurants);
