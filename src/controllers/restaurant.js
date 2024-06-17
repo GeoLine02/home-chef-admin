@@ -2,12 +2,27 @@ const restaurantService = require("../services/restaurant");
 const restaurantSettingsService = require("../services/restaurant.settings.service");
 const restaurantWorkingDaysService = require("../services/restaurant.workingDays.service");
 
-const getAllRestaurants = async (req, res) => {
+const getRestaurants = async (req, res) => {
   try {
-    const restaurants = await restaurantService.getAllRestaurants();
+    const { page, limit } = req.query;
+
+    const restaurants = await restaurantService.getRestaurants(page, limit);
     res.json(restaurants);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
+  }
+};
+
+const filterRestaurants = async (req, res) => {
+  try {
+    const queryParams = req.query;
+    const filteredRestaurants =
+      await restaurantService.filterRestaurants(queryParams);
+    res.status(200).json(filteredRestaurants);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "internal server error" });
   }
 };
 
@@ -197,10 +212,11 @@ const searchRestaurantByName = async (req, res) => {
 };
 
 module.exports = {
-  getAllRestaurants,
+  getRestaurants,
   createRestaurant,
   getRestaurantById,
   deleteRestaurantByID,
   updateRestaurantByID,
   searchRestaurantByName,
+  filterRestaurants,
 };

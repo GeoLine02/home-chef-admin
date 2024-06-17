@@ -1,9 +1,27 @@
 const pool = require("../db/index");
 
-async function getAllRestaurants() {
+async function getRestaurants(page, limit, searchValue) {
   try {
-    const res = await pool.query(`SELECT * FROM "Restaurants"`);
-    return res.rows;
+    const query = `SELECT * FROM "Restaurants" WHERE name LIKE '%${searchValue}%' OFFSET $2 LIMIT $3;`;
+    const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
+
+    const offset = Number(page - 1) * limit;
+
+    const [result, totalRecords] = await Promise.all([
+      pool.query(query, [searchValue, limit, offset]),
+      pool.query(totalDataCount),
+    ]);
+    const totalPages = Math.ceil(totalRecords.rows[0].count / limit);
+
+    return {
+      data: result.rows,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalRecords: parseInt(totalRecords.rows[0].count),
+        totalPages,
+      },
+    };
   } catch (error) {
     throw error;
   }
@@ -25,7 +43,6 @@ async function searchRestaurantByName(restaurantName) {
     const res = await pool.query(
       `SELECT * FROM "Restaurants" WHERE name LIKE '${restaurantName}%'`
     );
-    console.log(res.rows);
     return res.rows;
   } catch (error) {
     throw error;
@@ -97,11 +114,40 @@ async function createRestaurant({
   }
 }
 
+async function filterRestaurants({ name, id }) {
+  try {
+    let query = `SELECT * FROM "Restaurants" WHERE `;
+    if (!name && !id) {
+      return false;
+    }
+
+    const values = [];
+
+    if (name & id) {
+      query += "name = $1 AND id = $2";
+      values.push(name, +id);
+    } else if (name) {
+      query += `name ILIKE $1`;
+      values.push(name + "%");
+    } else if (id) {
+      query += "id = $1";
+      values.push(+id);
+    } else {
+      query = "SELECT * FROM Restaurants";
+    }
+    const res = await pool.query(query, values);
+    return res.rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
-  getAllRestaurants,
+  getRestaurants,
   createRestaurant,
   searchRestaurantByName,
   getRestaurantByID,
   deleteRestaurantByID,
   updateRestaurantByID,
+  filterRestaurants,
 };
