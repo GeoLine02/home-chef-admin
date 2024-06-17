@@ -1,9 +1,26 @@
 const pool = require("../db/index");
 
-async function getAllRestaurants() {
+async function getRestaurants(page, limit, restaurantName) {
   try {
-    const res = await pool.query(`SELECT * FROM "Restaurants"`);
-    return res.rows;
+    const query = `SELECT * FROM "Restaurants" LIMIT $1 OFFSET $2`;
+    const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
+    const offset = Number(page - 1) * limit;
+
+    const [result, totalRecords] = await Promise.all([
+      pool.query(query, [limit, offset]),
+      pool.query(totalDataCount),
+    ]);
+    const totalPages = Math.ceil(totalRecords.rows[0].count / limit);
+
+    return {
+      data: result.rows,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalRecords: parseInt(totalRecords.rows[0].count),
+        totalPages,
+      },
+    };
   } catch (error) {
     throw error;
   }
@@ -98,7 +115,7 @@ async function createRestaurant({
 }
 
 module.exports = {
-  getAllRestaurants,
+  getRestaurants,
   createRestaurant,
   searchRestaurantByName,
   getRestaurantByID,

@@ -2,11 +2,14 @@ const restaurantService = require("../services/restaurant");
 const restaurantSettingsService = require("../services/restaurant.settings.service");
 const restaurantWorkingDaysService = require("../services/restaurant.workingDays.service");
 
-const getAllRestaurants = async (req, res) => {
+const getRestaurants = async (req, res) => {
   try {
-    const restaurants = await restaurantService.getAllRestaurants();
+    const { page, limit } = req.query;
+
+    const restaurants = await restaurantService.getRestaurants(page, limit);
     res.json(restaurants);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -197,7 +200,7 @@ const searchRestaurantByName = async (req, res) => {
 };
 
 module.exports = {
-  getAllRestaurants,
+  getRestaurants,
   createRestaurant,
   getRestaurantById,
   deleteRestaurantByID,
