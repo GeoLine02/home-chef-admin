@@ -4,9 +4,24 @@ const restaurantWorkingDaysService = require("../services/restaurant.workingDays
 
 const getRestaurants = async (req, res) => {
   try {
-    const { page, limit } = req.query;
+    const queryParams = req.query;
 
-    const restaurants = await restaurantService.getRestaurants(page, limit);
+    const page = queryParams?.page || 1;
+    const limit = queryParams?.limit || 10;
+    const name = queryParams?.name;
+    const id = queryParams?.id;
+
+    // console.log("page", page);
+    // console.log("limit", limit);
+    // console.log("name", name);
+    // console.log("id", id);
+
+    const restaurants = await restaurantService.getRestaurants(
+      page,
+      limit,
+      name,
+      id
+    );
     res.json(restaurants);
   } catch (error) {
     console.log(error);

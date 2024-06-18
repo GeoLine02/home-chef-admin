@@ -1,14 +1,31 @@
 const pool = require("../db/index");
 
-async function getRestaurants(page, limit, searchValue) {
+async function getRestaurants(page, limit, name, id) {
   try {
-    const query = `SELECT * FROM "Restaurants" WHERE name LIKE '%${searchValue}%' OFFSET $2 LIMIT $3;`;
-    const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
+    let query = `SELECT * FROM "Restaurants" WHERE `;
 
     const offset = Number(page - 1) * limit;
 
+    const values = [];
+
+    if (name && id) {
+      query += `name ILIKE $1 AND id = $2 OFFSET $3 LIMIT $4`;
+      values.push(name, +id, offset, +limit);
+    } else if (name) {
+      query += `name ILIKE $1 OFFSET $2 LIMIT $3`;
+      values.push(name + "%", offset, +limit);
+    } else if (id) {
+      query += "id = $1 OFFSET $2 LIMIT $3";
+      values.push(+id, offset, +limit);
+    } else {
+      query = `SELECT * FROM "Restaurants" OFFSET $1 LIMIT $2`;
+      values.push(offset, limit);
+    }
+
+    const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
+
     const [result, totalRecords] = await Promise.all([
-      pool.query(query, [searchValue, limit, offset]),
+      pool.query(query, values),
       pool.query(totalDataCount),
     ]);
     const totalPages = Math.ceil(totalRecords.rows[0].count / limit);
@@ -123,8 +140,8 @@ async function filterRestaurants({ name, id }) {
 
     const values = [];
 
-    if (name & id) {
-      query += "name = $1 AND id = $2";
+    if (name && id) {
+      query += "name=$1 AND id=$2";
       values.push(name, +id);
     } else if (name) {
       query += `name ILIKE $1`;
