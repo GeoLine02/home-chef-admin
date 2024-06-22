@@ -1,31 +1,37 @@
 const pool = require("../db/index");
+const FilterParamsToSqlSelect = require("../helpers/paramsToSQL");
 
-async function getRestaurants(page, limit, name, id) {
+async function getRestaurants(page, limit, search) {
   try {
-    let query = `SELECT * FROM "Restaurants" WHERE `;
-
     const offset = Number(page - 1) * limit;
 
-    const values = [];
-
-    if (name && id) {
-      query += `name ILIKE $1 AND id = $2 OFFSET $3 LIMIT $4`;
-      values.push(name, +id, offset, +limit);
-    } else if (name) {
-      query += `name ILIKE $1 OFFSET $2 LIMIT $3`;
-      values.push(name + "%", offset, +limit);
-    } else if (id) {
-      query += "id = $1 OFFSET $2 LIMIT $3";
-      values.push(+id, offset, +limit);
-    } else {
-      query = `SELECT * FROM "Restaurants" OFFSET $1 LIMIT $2`;
-      values.push(offset, limit);
+    if (typeof page !== "number") {
+      console.log(page);
+      return `page must be type of number`;
+    } else if (typeof limit === "string") {
+      return `limit must be type of number`;
+    } else if (typeof search !== "string") {
+      return `search must be type of string`;
     }
 
-    const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
+    const filteredQuery = new FilterParamsToSqlSelect(
+      "Restaurants",
+      search,
+      offset,
+      limit
+    );
 
+    const filteredQueryToSql = filteredQuery.toSqlSelect();
+
+    const filterObj = {};
+    search.split(",").forEach((item) => {
+      const [key, value] = item.split(":");
+      filterObj[key] = value;
+    });
+
+    const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
     const [result, totalRecords] = await Promise.all([
-      pool.query(query, values),
+      pool.query(filteredQueryToSql[0], filteredQueryToSql[1]),
       pool.query(totalDataCount),
     ]);
     const totalPages = Math.ceil(totalRecords.rows[0].count / limit);
@@ -38,6 +44,7 @@ async function getRestaurants(page, limit, name, id) {
         totalRecords: parseInt(totalRecords.rows[0].count),
         totalPages,
       },
+      filters: filterObj,
     };
   } catch (error) {
     throw error;
