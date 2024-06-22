@@ -29,8 +29,6 @@ async function getRestaurants(page, limit, search) {
       filterObj[key] = value;
     });
 
-    console.log("filteredQueryToSql", filteredQueryToSql[0]);
-
     const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
     const [result, totalRecords] = await Promise.all([
       pool.query(filteredQueryToSql[0], filteredQueryToSql[1]),
@@ -46,7 +44,7 @@ async function getRestaurants(page, limit, search) {
         totalRecords: parseInt(totalRecords.rows[0].count),
         totalPages,
       },
-      // filters: filterObj,
+      filters: filterObj,
     };
   } catch (error) {
     throw error;
