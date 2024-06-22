@@ -1,28 +1,21 @@
 const restaurantService = require("../services/restaurant");
 const restaurantSettingsService = require("../services/restaurant.settings.service");
 const restaurantWorkingDaysService = require("../services/restaurant.workingDays.service");
+// const FilterParamsToSqlSelect = require("../helpers/paramsToSQL");
 
 const getRestaurants = async (req, res) => {
   try {
     const queryParams = req.query;
-
-    const page = queryParams?.page || 1;
-    const limit = queryParams?.limit || 10;
-    const name = queryParams?.name;
-    const id = queryParams?.id;
-
-    // console.log("page", page);
-    // console.log("limit", limit);
-    // console.log("name", name);
-    // console.log("id", id);
+    const page = +queryParams?.page || 1;
+    const limit = +queryParams?.limit || 10;
+    const search = queryParams.search || "";
 
     const restaurants = await restaurantService.getRestaurants(
       page,
       limit,
-      name,
-      id
+      search
     );
-    res.json(restaurants);
+    res.status(200).json(restaurants);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });
