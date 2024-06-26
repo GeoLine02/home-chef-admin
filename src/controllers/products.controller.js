@@ -12,11 +12,6 @@ const getAllProducts = async (req, res) => {
 const getProductByID = async (req, res) => {
   try {
     const restaurnatId = req.params.id;
-    if (restaurnatId) {
-      res.status(404).json({
-        message: `products for restaurant ${restaurnatId} does not exist`,
-      });
-    }
     const productByID = await productSeriveces.getProductByID(restaurnatId);
     res.status(200).json(productByID);
   } catch (error) {
@@ -35,7 +30,9 @@ const createProduct = async (req, res) => {
       productPrice,
     } = req.body;
 
-    if (!productPhoto) {
+    productPrice = Number(productPrice);
+
+    if (!req.file) {
       productPhoto = null;
     } else {
       productPhoto =
@@ -46,7 +43,7 @@ const createProduct = async (req, res) => {
         req.file.filename;
     }
 
-    await productSeriveces.createProduct({
+    const result = await productSeriveces.createProduct({
       restaurantID,
       productName,
       productDescription,
@@ -54,7 +51,13 @@ const createProduct = async (req, res) => {
       productPhoto,
       productPrice,
     });
-    res.status(200).json({ message: "product created succesfully" });
+
+    if (typeof result === 'string') {
+      res.status(400).json({ error: result });
+    } else {
+      res.status(201).json({ message: 'Product created successfully', product: result });
+    }
+
   } catch (error) {
     res.status(500).send("internal server error");
   }
@@ -70,15 +73,11 @@ const updateProductById = async (req, res) => {
       productPrice,
     } = req.body;
 
+    productPrice = Number(productPrice);
+
     const productID = req.params.id;
 
-    if (!productID) {
-      res
-        .status(404)
-        .json({ message: `product with id ${productID} does not exist` });
-    }
-
-    if (!productPhoto) {
+    if (!req.file) {
       productPhoto = null;
     } else {
       productPhoto =
@@ -99,8 +98,14 @@ const updateProductById = async (req, res) => {
         productPrice,
       }
     );
-    res.status(200).json(upadetedProduct);
+
+    if (typeof upadetedProduct === 'string') {
+      res.status(400).json({ error: upadetedProduct });
+    } else {
+      res.status(201).json({ message: 'Product updated successfully'});
+    }
   } catch (error) {
+    console.log(error)
     res.status(500).send("internal server error");
   }
 };
@@ -108,8 +113,8 @@ const updateProductById = async (req, res) => {
 const deleteProductByID = async (req, res) => {
   try {
     const productID = req.params.id;
-    await productSeriveces.deleteProductByID(productID);
-    res.status(200).json({ message: "restaurant deleted succesfully" });
+    const product = await productSeriveces.deleteProductByID(productID);
+    res.status(200).json(product);
   } catch (e) {
     res.status(500).send("internal server error");
   }

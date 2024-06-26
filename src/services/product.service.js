@@ -14,6 +14,10 @@ async function getProductByID(restaurnatId) {
   try {
     const query = `SELECt * FROM "Products" WHERE id = $1`;
     const res = await pool.query(query, [restaurnatId]);
+
+    if(res.rows.length === 0){
+      return `product with id ${restaurnatId} doesn't exists`;
+    }
     return res.rows[0];
   } catch (error) {
     throw error;
@@ -28,11 +32,36 @@ async function createProduct({
   productPhoto,
   productPrice,
 }) {
+    // Validation checks
+    if (!restaurantID) {
+      return 'restaurantID is required';
+    }
+    if (!productName) {
+      return 'productName is required';
+    }
+    if (!productDescription) {
+      return 'productDescription is required';
+    }
+    if (!productComposition) {
+      return 'productComposition is required';
+    }
+    if (productPhoto === null) {
+      return `productPhoto's type should be an image`;
+    }
+    if (!productPhoto) {
+      return 'productPhoto is required';
+    }
+    if (!productPrice) {
+      return 'productPrice is required';
+    }
+    if (!Number.isInteger(productPrice)) {
+      return 'productPrice should be Integer';
+    }
+
   try {
-    const query = `INSERT INTO "Products" ("restaurantID", "productName", "productDescription", "productComposition", "productPhoto", "productPrice") VALUES ($1, $2, $3, $4, $5, $6)`;
+    const query = `INSERT INTO "Products" ("restaurantID", "productName", "productDescription", "productComposition", "productPhoto", "productPrice") VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
     const res = await pool.query(
       query,
-
       [
         restaurantID,
         productName,
@@ -42,7 +71,7 @@ async function createProduct({
         productPrice,
       ]
     );
-    return res.rows;
+    return res.rows[0];
   } catch (error) {
     throw error;
   }
@@ -58,7 +87,38 @@ async function updateProductByID(
     productPrice,
   }
 ) {
+  // Validation checks
+  if (!productName) {
+    return 'productName is required';
+  }
+  if (!productDescription) {
+    return 'productDescription is required';
+  }
+  if (!productComposition) {
+    return 'productComposition is required';
+  }
+  if (productPhoto === null) {
+    return `productPhoto's type should be an image`;
+  }
+  if (!productPhoto) {
+    return 'productPhoto is required';
+  }
+  if (productPrice === undefined || productPrice === null) {
+    return 'productPrice is required';
+  }
+  if (!Number.isInteger(productPrice)) {
+    return 'productPrice should be Integer';
+  }
+
   try {
+
+    const queryToFindProd = `SELECt * FROM "Products" WHERE id = $1`;
+    const resToFindProd = await pool.query(queryToFindProd, [productID]);
+
+    if(resToFindProd.rows.length === 0){
+      return `product with id ${productID} doesn't exists`;
+    }
+
     const query = `UPDATE "Products" SET "productName" = $1, "productDescription" = $2, "productComposition" = $3, "productPhoto" = $4, "productPrice" = $5 WHERE id = $6`;
     const res = await pool.query(query, [
       productName,
@@ -78,9 +138,14 @@ async function deleteProductByID(productID) {
   try {
     const query = `DELETE FROM "Products" WHERE id = $1`;
     const res = await pool.query(query, [productID]);
-    return res.rows;
+
+    if(res.rowCount === 0){
+      return `Product with id ${productID} doesn't exists`;
+    }
+
+    return `Product with id ${productID} deleted`;
   } catch (error) {
-    throw error;
+    throw error;   
   }
 }
 

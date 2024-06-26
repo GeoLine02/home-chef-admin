@@ -11,11 +11,6 @@ const getRestaurants = async (req, res) => {
     const name = queryParams?.name;
     const id = queryParams?.id;
 
-    // console.log("page", page);
-    // console.log("limit", limit);
-    // console.log("name", name);
-    // console.log("id", id);
-
     const restaurants = await restaurantService.getRestaurants(
       page,
       limit,
@@ -24,7 +19,6 @@ const getRestaurants = async (req, res) => {
     );
     res.json(restaurants);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
