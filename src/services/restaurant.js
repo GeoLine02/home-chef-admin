@@ -1,15 +1,29 @@
 const pool = require("../db/index");
 
-async function getRestaurants(page, limit, search) {
+async function getRestaurants(page, limit, filterBy, search) {
   try {
     let offset = Number(page - 1) * limit;
-    if (!offset) {
-      offset = 1;
-    }
 
-    const restaurantsQuery = `SELECT "Restaurants".*, "RestaurantContacts".email, "RestaurantContacts".phone FROM"Restaurants" JOIN "RestaurantContacts" ON "Restaurants".id = "RestaurantContacts"."restaurantID"`;
+    let restaurantsQuery = `SELECT "Restaurants".*, "RestaurantContacts".email, "RestaurantContacts".phone FROM"Restaurants" JOIN "RestaurantContacts" ON "Restaurants".id = "RestaurantContacts"."restaurantID"`;
 
     const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
+
+    if (filterBy === "id") {
+      restaurantsQuery += ` WHERE "Restaurants".${filterBy} = ${search}`;
+    } else if (filterBy === "ownerId") {
+      restaurantsQuery += ` WHERE "Restaurants"."${filterBy}" = ${search}`;
+    }
+
+    if (filterBy && search && filterBy !== "id" && filterBy !== "ownerId") {
+      restaurantsQuery += ` WHERE ${filterBy} ILIKE '${search}%'`;
+    }
+
+    if (limit && page) {
+      restaurantsQuery += ` LIMIT ${limit} OFFSET ${offset}`;
+    }
+
+    console.log(restaurantsQuery);
+
     const [result, totalRecords] = await Promise.all([
       pool.query(restaurantsQuery),
       pool.query(totalDataCount),

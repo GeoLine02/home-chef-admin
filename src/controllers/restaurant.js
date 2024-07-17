@@ -1,7 +1,6 @@
 const restaurantService = require("../services/restaurant");
 const restaurantSettingsService = require("../services/restaurant.settings.service");
 const restaurantWorkingDaysService = require("../services/restaurant.workingDays.service");
-// const FilterParamsToSqlSelect = require("../helpers/paramsToSQL");
 
 const getRestaurants = async (req, res) => {
   try {
@@ -9,10 +8,12 @@ const getRestaurants = async (req, res) => {
     const page = +queryParams?.page || 1;
     const limit = +queryParams?.limit || 10;
     const search = queryParams.search || "";
+    const filterBy = queryParams.filterBy;
 
     const restaurants = await restaurantService.getRestaurants(
       page,
       limit,
+      filterBy,
       search
     );
     res.status(200).json(restaurants);
