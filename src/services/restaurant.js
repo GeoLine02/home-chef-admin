@@ -1,39 +1,20 @@
 const pool = require("../db/index");
-const FilterParamsToSqlSelect = require("../helpers/paramsToSQL");
 
 async function getRestaurants(page, limit, search) {
   try {
-    const offset = Number(page - 1) * limit;
-
-    if (typeof page !== "number") {
-      console.log(page);
-      return `page must be type of number`;
-    } else if (typeof limit === "string") {
-      return `limit must be type of number`;
-    } else if (typeof search !== "string") {
-      return `search must be type of string`;
+    let offset = Number(page - 1) * limit;
+    if (!offset) {
+      offset = 1;
     }
 
-    const filteredQuery = new FilterParamsToSqlSelect(
-      "Restaurants",
-      search,
-      offset,
-      limit
-    );
-
-    const filteredQueryToSql = filteredQuery.toSqlSelect();
-
-    const filterObj = {};
-    search.split(",").forEach((item) => {
-      const [key, value] = item.split(":");
-      filterObj[key] = value;
-    });
+    const restaurantsQuery = `SELECT "Restaurants".*, "RestaurantContacts".email, "RestaurantContacts".phone FROM"Restaurants" JOIN "RestaurantContacts" ON "Restaurants".id = "RestaurantContacts"."restaurantID"`;
 
     const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
     const [result, totalRecords] = await Promise.all([
-      pool.query(filteredQueryToSql[0], filteredQueryToSql[1]),
+      pool.query(restaurantsQuery),
       pool.query(totalDataCount),
     ]);
+
     const totalPages = Math.ceil(totalRecords.rows[0].count / limit);
 
     return {
@@ -44,7 +25,6 @@ async function getRestaurants(page, limit, search) {
         totalRecords: parseInt(totalRecords.rows[0].count),
         totalPages,
       },
-      filters: filterObj,
     };
   } catch (error) {
     throw error;
