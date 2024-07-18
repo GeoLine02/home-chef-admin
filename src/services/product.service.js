@@ -1,11 +1,54 @@
 const pool = require("../db/index");
 
-async function getAllProducts() {
+async function getAllProducts(page, limit, filterBy, search) {
+  console.log("page", page);
+  console.log("limit", limit);
+
   try {
-    const query = `SELECT * FROM "Products"`;
-    const res = await pool.query(query);
-    return res.rows;
+    let offset = Number(page - 1) * limit;
+
+    let productQuery = `SELECT * FROM "Products"`;
+
+    const totalDataCount = `SELECT COUNT(*) FROM "Products"`;
+
+    if (filterBy === "id") {
+      productQuery += ` WHERE "Products".${filterBy} = ${search}`;
+    } else if (filterBy === "restaurantID") {
+      productQuery += ` WHERE "Products"."${filterBy}" = ${search}`;
+    }
+
+    if (
+      filterBy &&
+      search &&
+      filterBy !== "restaurantID" &&
+      filterBy !== "productPrice" &&
+      filterBy !== "weight"
+    ) {
+      productQuery += ` WHERE ${filterBy} ILIKE '${search}%'`;
+    }
+
+    if (limit && page) {
+      productQuery += ` LIMIT ${limit} OFFSET ${offset}`;
+    }
+    console.log(productQuery);
+    const [result, totalRecords] = await Promise.all([
+      pool.query(productQuery),
+      pool.query(totalDataCount),
+    ]);
+
+    const totalPages = Math.ceil(totalRecords.rows[0].count / limit);
+
+    return {
+      data: result.rows,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        // totalRecords: parseInt(totalDataCount.rows[0].count),
+        totalPages,
+      },
+    };
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }

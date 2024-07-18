@@ -2,7 +2,17 @@ const productSeriveces = require("../services/product.service");
 
 const getAllProducts = async (req, res) => {
   try {
-    const AllProducts = await productSeriveces.getAllProducts();
+    const page = req.query?.page;
+    const limit = req.query?.limit;
+    const filterBy = req.query?.filterBy;
+    const search = req.query?.search;
+
+    const AllProducts = await productSeriveces.getAllProducts(
+      page,
+      limit,
+      filterBy,
+      search
+    );
     res.status(200).json(AllProducts);
   } catch (error) {
     res.status(500).send("internal server error");
