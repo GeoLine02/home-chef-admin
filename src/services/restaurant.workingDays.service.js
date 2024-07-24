@@ -2,7 +2,7 @@ const pool = require("../db/index");
 
 async function getWorkingDays() {
   try {
-    const query = `SELECT * FROM "RestaurantWorkingDays"`;
+    const query = `SELECT * FROM "Days"`;
     const res = await pool.query(query);
     return res.rows;
   } catch (error) {
@@ -11,10 +11,10 @@ async function getWorkingDays() {
 }
 
 async function setWorkingDays(restaurantId, workingDays) {
-  console.log("workingDaysType", Array.isArray(workingDays));
   try {
+    const workingDaysToArray = workingDays.split(",");
     const query = `INSERT INTO "RestaurantWorkingDaysJunctions" ("restaurantID", "workingDaysID") SELECT $1, unnest($2::int[])`;
-    const res = await pool.query(query, [restaurantId, workingDays]);
+    const res = await pool.query(query, [restaurantId, workingDaysToArray]);
     return res.rows;
   } catch (error) {
     throw error;

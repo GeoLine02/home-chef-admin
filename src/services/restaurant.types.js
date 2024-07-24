@@ -10,13 +10,13 @@ async function getRestaurantTypes() {
   }
 }
 
-async function setRestaurantTypes(restaurantId, types) {
+async function setRestaurantTypes(restaurantId, restaurntTypes) {
   try {
-    const query = `INSERT INTO "RestaurantTypesJunctions" (restaurantID, typeID) VALUES (${(restaurantId, typeID)})`;
-    types.map(async (type) => {
-      const restaurantType = await pool.query(query, [restaurantId, type]);
-      return restaurantType.rows;
-    });
+    const restaurntTypesToArry = restaurntTypes.split(",");
+    console.log(restaurntTypesToArry);
+    const query = `INSERT INTO "RestaurantTypesJunctions" ("restaurantID", "typeID") SELECT $1, unnest($2::int[])`;
+    const res = await pool.query(query, [restaurantId, restaurntTypesToArry]);
+    return res.rows;
   } catch (error) {
     throw error;
   }

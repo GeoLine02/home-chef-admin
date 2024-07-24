@@ -11,8 +11,13 @@ const getAllRestaurantTypes = async (req, res) => {
 
 const ChooseRestaurantTypes = async (req, res) => {
   try {
+    const restaurnatID = req.body.id;
+    const restaurantTypes = req.body.restaurantTypes;
     const choosenRestaurantTypes =
-      await restaurantTypesServices.getRestaurantTypes();
+      await restaurantTypesServices.setRestaurantTypes(
+        restaurnatID,
+        restaurantTypes
+      );
     res.status(200).json(choosenRestaurantTypes);
   } catch (error) {
     res.status(500).send("internal server error");

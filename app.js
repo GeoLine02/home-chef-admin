@@ -32,7 +32,7 @@ app.use("/restaurantSettings", restaurantSettingsRoutes);
 app.use("/users", userRouts);
 app.use("/static", express.static("public"));
 app.use("/userTransactions", userTransactionsRoutes);
-app.use("/workingDays", restaurantWorkingDaysRoutes);
+app.use("/days", restaurantWorkingDaysRoutes);
 
 app.post("/uploads/restaurants", uplaod.single("file"), (req, res) => {
   console.log("123123123123123123123", req.file.path);
