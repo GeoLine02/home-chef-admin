@@ -80,52 +80,26 @@ async function deleteRestaurantByID(restaurantId) {
 
     return [restaurants, typesJunctions];
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
 
-async function updateRestaurantByID(
-  restaurantId,
-  { name, address, city, email, phoneNumber, ownerId, img }
-) {
+async function updateRestaurantByID(restaurantId, { name, ownerId, img }) {
   try {
-    const query = `UPDATE "Restaurants" SET name = $1, address = $2, city= $3, email = $4, "phoneNumber" = $5, "ownerId" = $6, img = $7 WHERE id = $8`;
-    const res = await pool.query(query, [
-      name,
-      address,
-      city,
-      email,
-      phoneNumber,
-      ownerId,
-      img,
-      restaurantId,
-    ]);
+    const query = `UPDATE "Restaurants" SET name = $1, "ownerId" = $2, img = $3 WHERE id = $4`;
+    const res = await pool.query(query, [name, ownerId, img, restaurantId]);
     return res.rows;
   } catch (error) {
     throw error;
   }
 }
 
-async function createRestaurant({
-  name,
-  address,
-  city,
-  email,
-  phoneNumber,
-  ownerId,
-  img,
-}) {
+async function createRestaurant({ name, ownerId, img }) {
   try {
-    const query = `INSERT INTO "Restaurants" (name, address, city, email, "phoneNumber", "ownerId", img) VALUES ($1, $2, $3, $4, $5, $6, $7)`;
-    const res = await pool.query(query, [
-      name,
-      address,
-      city,
-      email,
-      phoneNumber,
-      ownerId,
-      img,
-    ]);
+    const query = `INSERT INTO "Restaurants" (name, "ownerId", img) VALUES ($1, $2, $3) RETURNING *`;
+    const res = await pool.query(query, [name, ownerId, img]);
+    console.log(res.rows[0]);
     return res.rows[0];
   } catch (error) {
     throw error;

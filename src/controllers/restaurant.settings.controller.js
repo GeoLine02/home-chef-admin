@@ -3,6 +3,7 @@ const restaurantSettingsService = require("../services/restaurant.settings.servi
 const setActiveHours = async (req, res) => {
   try {
     const { workingFrom, workingTill } = req.body;
+    console.log(workingFrom, workingTill);
     await restaurantSettingsService.setActiveHours(workingFrom, workingTill);
     res.status(200).json({ message: "active hours set successfully" });
   } catch (error) {

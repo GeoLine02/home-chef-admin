@@ -3,7 +3,7 @@ const router = express.Router();
 const restaurantTypesController = require("../controllers/restaurant.types");
 
 router.get("/", restaurantTypesController.getAllRestaurantTypes);
-router.post("/choose", restaurantTypesController.ChooseRestaurantTypes);
+router.post("/select", restaurantTypesController.ChooseRestaurantTypes);
 router.delete(
   "/delete",
   restaurantTypesController.deleteRestauarntTypesJucntions
