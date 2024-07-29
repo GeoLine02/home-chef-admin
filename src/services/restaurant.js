@@ -22,8 +22,6 @@ async function getRestaurants(page, limit, filterBy, search) {
       restaurantsQuery += ` LIMIT ${limit} OFFSET ${offset}`;
     }
 
-    console.log(restaurantsQuery);
-
     const [result, totalRecords] = await Promise.all([
       pool.query(restaurantsQuery),
       pool.query(totalDataCount),
@@ -47,11 +45,32 @@ async function getRestaurants(page, limit, filterBy, search) {
 
 async function getRestaurantByID(restaurantId) {
   try {
-    const res = await pool.query(`SELECT * FROM "Restaurants" WHERE id = $1`, [
-      restaurantId,
-    ]);
+    const query = `
+    SELECT 
+        "Restaurants".*, 
+        "RestaurantContacts".*, 
+        "RestaurantAddress".*,
+        "RestaurantSettings".*, 
+        (
+            SELECT array_agg("RestaurantWorkingDaysJunctions"."workingDaysID")
+            FROM "RestaurantWorkingDaysJunctions"
+            WHERE "RestaurantWorkingDaysJunctions"."restaurantID" = "Restaurants".id
+        ) as "workingDays",
+        (
+            SELECT array_agg("RestaurantTypesJunctions"."typeID")
+            FROM "RestaurantTypesJunctions"
+            WHERE "RestaurantTypesJunctions"."restaurantID" = "Restaurants".id
+        ) as "restaurantTypes"
+    FROM "Restaurants"
+    JOIN "RestaurantContacts" ON "Restaurants".id = "RestaurantContacts"."restaurantID"
+    JOIN "RestaurantAddress" ON "Restaurants".id = "RestaurantAddress"."restaurantID"
+    JOIN "RestaurantSettings" ON "Restaurants".id = "RestaurantSettings"."restaurantID"
+    WHERE "Restaurants".id = $1;
+`;
+    const res = await pool.query(query, [restaurantId]);
     return res.rows[0];
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
@@ -91,14 +110,16 @@ async function updateRestaurantByID(restaurantId, { name, ownerId, img }) {
     const res = await pool.query(query, [name, ownerId, img, restaurantId]);
     return res.rows;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
 
 async function createRestaurant({ name, ownerId, img }) {
   try {
+    const ownerIDToInteger = parseInt(ownerId);
     const query = `INSERT INTO "Restaurants" (name, "ownerId", img) VALUES ($1, $2, $3) RETURNING *`;
-    const res = await pool.query(query, [name, ownerId, img]);
+    const res = await pool.query(query, [name, ownerIDToInteger, img]);
     console.log(res.rows[0]);
     return res.rows[0];
   } catch (error) {

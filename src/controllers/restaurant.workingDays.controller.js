@@ -18,9 +18,6 @@ const setWorkingDays = async (req, res) => {
         .json({ message: `restaurant with id ${restaurantId} does not exist` });
     }
 
-    if (!Array.isArray(workingDays)) {
-      res.status(400).json({ message: "wokringDays should be type of Array" });
-    }
     await restaurantWorkngDaysService.setWorkingDays(restaurantId, workingDays);
     return res.status(201).send("working days set successfuly");
   } catch (e) {
@@ -31,14 +28,7 @@ const setWorkingDays = async (req, res) => {
 const updateWorkingDays = async (req, res) => {
   try {
     const { restaurantId, workingDays } = req.body;
-    if (!restaurantId) {
-      res
-        .status(400)
-        .json({ message: `restaurant with id ${restaurantId} does not exist` });
-    }
-    if (!Array.isArray(workingDays)) {
-      res.status(400).json({ message: "wokringDays should be type of Array" });
-    }
+
     await restaurantWorkngDaysService.updateWorkingDays(
       restaurantId,
       workingDays
