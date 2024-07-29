@@ -85,21 +85,19 @@ const updateRestaurantByID = async (req, res) => {
       name,
       address,
       city,
+      countryId,
+      latitude,
+      longitude,
       email,
-      phoneNumber,
+      phone,
       ownerId,
-      img,
-      workingDays,
       workingFrom,
       workingTill,
+      workingDays,
+      restaurantTypes,
     } = req.body;
 
-    if (!workingFrom || !workingTill) {
-      res.status(400).json({ message: "working Hours filds are missing" });
-    } else if (workingFrom >= workingTill) {
-      res.status(400).json({ message: "invalide working hours values" });
-    }
-
+    let img = req.file;
     if (!img) {
       img = null;
     } else {
@@ -113,15 +111,10 @@ const updateRestaurantByID = async (req, res) => {
 
     const updatedRestaurant = await restaurantService.updateRestaurantByID(
       restaurantID,
-      { name, address, city, email, phoneNumber, ownerId, img }
+      { name, ownerId, img }
     );
 
-    if (
-      workingFrom &&
-      workingTill &&
-      workingFrom < workingTill &&
-      updatedRestaurant
-    ) {
+    if (updatedRestaurant) {
       await Promise.all([
         restaurantWorkingDaysService.updateWorkingDays(
           restaurantID,
@@ -132,8 +125,28 @@ const updateRestaurantByID = async (req, res) => {
           workingFrom,
           workingTill
         ),
+        RestaurantContactsService.updateRestaurantContacts(
+          restaurantID,
+          email,
+          phone
+        ),
+        restaurantAddressSerivce.upateRestaurantAddress(
+          restaurantID,
+          countryId,
+          address,
+          latitude,
+          longitude,
+          city
+        ),
+        restaurantTypesService.updateRestaurantTypes(
+          restaurantID,
+          restaurantTypes
+        ),
       ]);
       res.status(201).json(updatedRestaurant);
+    } else {
+      console.log("finally", 0);
+      return 0;
     }
   } catch (error) {
     res.status(500).send("internal server error");
@@ -142,12 +155,11 @@ const updateRestaurantByID = async (req, res) => {
 
 const createRestaurant = async (req, res) => {
   try {
-    console.log(req.body);
     let {
       name,
       address,
       city,
-      countryID,
+      countryId,
       latitude,
       longitude,
       email,
@@ -192,15 +204,11 @@ const createRestaurant = async (req, res) => {
         ),
         restaurantAddressSerivce.createRestaurantAddress(
           createdRestaurant.id,
-          countryID, // undefined
+          countryId, // undefined
           address,
           latitude, // undefined
           longitude, // undefined
           city
-        ),
-        restaurantSettingsService.changeRestaurantStatus(
-          isRestaurantActive,
-          createdRestaurant.id
         ),
         restaurantWorkingDaysService.setWorkingDays(
           createdRestaurant.id,

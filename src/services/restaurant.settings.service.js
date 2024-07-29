@@ -8,7 +8,13 @@ async function setActiveHours(restaurantID, workingFrom, workingTill) {
       workingFrom,
       workingTill,
     ]);
-    return res.rows;
+    if (res) {
+      console.log("restaurantSettings", 1);
+      return 1;
+    } else {
+      console.log("restaurantSettings", 0);
+      return 0;
+    }
   } catch (error) {
     throw error;
   }
@@ -16,14 +22,22 @@ async function setActiveHours(restaurantID, workingFrom, workingTill) {
 
 async function updateActiveHours(restaurantID, workingFrom, workingTill) {
   try {
-    const query = `UPDATE "RestaurantSettings" SET "workingFrom" = $2, workinTill = $3, WHERE "restaurantID" = $1`;
+    const query = `UPDATE "RestaurantSettings" SET "workingFrom"=$2, "workingTill"=$3 WHERE "restaurantID"=$1`;
     const res = await pool.query(query, [
       restaurantID,
       workingFrom,
       workingTill,
     ]);
-    return res.rows;
+
+    if (res) {
+      console.log("activeHours", 1);
+      return 1;
+    } else {
+      console.log("activeHours", 0);
+      return 0;
+    }
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
