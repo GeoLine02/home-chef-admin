@@ -120,7 +120,6 @@ async function createRestaurant({ name, ownerId, img }) {
     const ownerIDToInteger = parseInt(ownerId);
     const query = `INSERT INTO "Restaurants" (name, "ownerId", img) VALUES ($1, $2, $3) RETURNING *`;
     const res = await pool.query(query, [name, ownerIDToInteger, img]);
-    console.log(res.rows[0]);
     return res.rows[0];
   } catch (error) {
     throw error;
