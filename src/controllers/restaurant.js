@@ -4,6 +4,8 @@ const restaurantWorkingDaysService = require("../services/restaurant.workingDays
 const restaurantAddressSerivce = require("../services/restaurant.address.service");
 const RestaurantContactsService = require("../services/restaurant.contacts.service");
 const restaurantTypesService = require("../services/restaurant.types");
+const restaurantAssetsService = require("../services/restaurant.assets.service");
+
 const getRestaurants = async (req, res) => {
   try {
     const queryParams = req.query;
@@ -91,6 +93,8 @@ const updateRestaurantByID = async (req, res) => {
       email,
       phone,
       ownerId,
+      introImage,
+      coverImage,
       workingFrom,
       workingTill,
       workingDays,
@@ -142,6 +146,8 @@ const updateRestaurantByID = async (req, res) => {
           restaurantID,
           restaurantTypes
         ),
+        restaurantAssetsService.updateIntroImage(restaurantID, introImage),
+        restaurantAssetsService.updateCoverImage(restaurantID, coverImage),
       ]);
       res.status(201).json(updatedRestaurant);
     } else {
@@ -168,6 +174,8 @@ const createRestaurant = async (req, res) => {
       workingFrom,
       workingTill,
       isRestaurantActive,
+      introImage,
+      coverImage,
       workingDays,
       restaurantTypes,
     } = req.body;
@@ -218,6 +226,8 @@ const createRestaurant = async (req, res) => {
           createdRestaurant.id,
           restaurantTypes
         ),
+        restaurantAssetsService.setCoverImage(createdRestaurant.id, coverImage),
+        restaurantAssetsService.setIntroImage(createdRestaurant.id, introImage),
       ]);
 
       res.status(201).json(createdRestaurant);
