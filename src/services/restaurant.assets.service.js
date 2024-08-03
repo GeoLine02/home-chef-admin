@@ -1,19 +1,9 @@
 const pool = require("../db/index");
 
-async function setIntroImage(restaurantID, introImage) {
+async function setRestaurantAssets(restaurantID, introImage, coverImage) {
   try {
-    const query = `INSERT INTO "RestaurantAssets" ("restaurantID", "introImage") VALUES ($1, $2) RETURNING *`;
-    const res = await pool.query(query, [restaurantID, introImage]);
-    return res.rows[0];
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-async function updateIntroImage(restaurantID, introImage) {
-  try {
-    const query = `UPDATE "RestaurantAssets" SET "introImage" = $2 WHERE "restaurantID" = $1`;
-    const res = await pool.query(query, [restaurantID, introImage]);
+    const query = `INSERT INTO "RestaurantAssets" ("restaurantID", "introImage", "coverImage") VALUES ($1, $2, $3)`;
+    const res = await pool.query(query, [restaurantID, introImage, coverImage]);
     if (res) {
       return 1;
     } else {
@@ -24,20 +14,10 @@ async function updateIntroImage(restaurantID, introImage) {
   }
 }
 
-async function setCoverImage(restaurantID, coverImage) {
+async function updateRestaurantAssets(restaurantID, introImage, coverImage) {
   try {
-    const query = `INSERT INTO "RestaurantAssets" ("restaurantID", "coverImage") VALUES ($1, $2) RETURNING *`;
-    const res = await pool.query(query, [restaurantID, coverImage]);
-    return res.rows[0];
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-async function updateCoverImage(restaurantID, coverImage) {
-  try {
-    const query = `UPDATE "RestaurantAssets" SET "coverImage" = $2 WHERE "restaurantID" = $1`;
-    const res = await pool.query(query, [restaurantID, coverImage]);
+    const query = `UPDATE "RestaurantAssets" SET "introImage" = $2, "coverImage" = 3$ WHERE "restaurantID" = $1`;
+    const res = await pool.query(query, [restaurantID, introImage, coverImage]);
     if (res) {
       return 1;
     } else {
@@ -49,8 +29,6 @@ async function updateCoverImage(restaurantID, coverImage) {
 }
 
 module.exports = {
-  setIntroImage,
-  setCoverImage,
-  updateIntroImage,
-  updateCoverImage,
+  setRestaurantAssets,
+  updateRestaurantAssets,
 };

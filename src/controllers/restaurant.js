@@ -146,8 +146,11 @@ const updateRestaurantByID = async (req, res) => {
           restaurantID,
           restaurantTypes
         ),
-        restaurantAssetsService.updateIntroImage(restaurantID, introImage),
-        restaurantAssetsService.updateCoverImage(restaurantID, coverImage),
+        restaurantAssetsService.updateRestaurantAssets(
+          restaurantID,
+          introImage,
+          coverImage
+        ),
       ]);
       res.status(201).json(updatedRestaurant);
     } else {
@@ -226,8 +229,11 @@ const createRestaurant = async (req, res) => {
           createdRestaurant.id,
           restaurantTypes
         ),
-        restaurantAssetsService.setCoverImage(createdRestaurant.id, coverImage),
-        restaurantAssetsService.setIntroImage(createdRestaurant.id, introImage),
+        restaurantAssetsService.setRestaurantAssets(
+          createdRestaurant.id,
+          introImage,
+          coverImage
+        ),
       ]);
 
       res.status(201).json(createdRestaurant);
