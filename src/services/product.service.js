@@ -1,10 +1,33 @@
 const pool = require("../db/index");
 
-async function getAllProducts() {
+async function getAllProducts(page, limit, filterBy, search) {
   try {
-    const query = `SELECT * FROM "Products"`;
-    const res = await pool.query(query);
-    return res.rows;
+    let offset = Number(page - 1) * limit;
+
+    let query = `SELECT * FROM "Products"`;
+    const totalDataCount = `SELECT COUNT(*) FROM "Products"`;
+    if (filterBy === "id") {
+      query += ` WHERE "Products"."restaurantID" = ${search}`;
+    }
+    if (filterBy === "productName") {
+      query += ` WHERE "Products"."productName" = ${search}`;
+    }
+    const [result, totalRecords] = await Promise.all([
+      pool.query(query),
+      pool.query(totalDataCount),
+    ]);
+
+    const totalPages = Math.ceil(totalRecords.rows[0].count / limit);
+
+    return {
+      data: result.rows,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalRecords: parseInt(totalRecords.rows[0].count),
+        totalPages,
+      },
+    };
   } catch (error) {
     throw error;
   }
