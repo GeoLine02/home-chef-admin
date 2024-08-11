@@ -2,7 +2,7 @@ const pool = require("../db/index");
 
 async function getWorkingDays() {
   try {
-    const query = `SELECT * FROM "RestaurantWorkingDays"`;
+    const query = `SELECT * FROM "Days"`;
     const res = await pool.query(query);
     return res.rows;
   } catch (error) {
@@ -11,11 +11,17 @@ async function getWorkingDays() {
 }
 
 async function setWorkingDays(restaurantId, workingDays) {
-  console.log("workingDaysType", Array.isArray(workingDays));
   try {
+    const parsedWorkingDays = JSON.parse(workingDays);
     const query = `INSERT INTO "RestaurantWorkingDaysJunctions" ("restaurantID", "workingDaysID") SELECT $1, unnest($2::int[])`;
-    const res = await pool.query(query, [restaurantId, workingDays]);
-    return res.rows;
+    const res = await pool.query(query, [restaurantId, parsedWorkingDays]);
+    if (res) {
+      console.log("RestaurantWorkingDaysJunctions", 1);
+      return 1;
+    } else {
+      console.log("RestaurantWorkingDaysJunctions", 0);
+      return 0;
+    }
   } catch (error) {
     throw error;
   }
@@ -23,13 +29,47 @@ async function setWorkingDays(restaurantId, workingDays) {
 
 async function updateWorkingDays(restaurantId, workingDays) {
   try {
-    const query = `UPDATE "RestaurantWorkingDaysJunctions" AS r
-    SET "restaurantID" = :restaurant_id
-    FROM unnest(:working_days_ids::int[]) AS u("workingDaysID")
-    WHERE r."workingDaysID" = u."workingDaysID"`;
-    const res = await pool.query(query, [restaurantId, workingDays]);
-    return res.rows;
+    const parsedWorkingDays = JSON.parse(workingDays);
+    const existingWorkingDaysResult = await pool.query(
+      'SELECT "workingDaysID" FROM "RestaurantWorkingDaysJunctions" WHERE "restaurantID" = $1',
+      [restaurantId]
+    );
+
+    const existingDayIDs = existingWorkingDaysResult.rows.map(
+      (row) => row.workingDaysID
+    );
+
+    // Determine the days to add and to remove
+    const daysToAdd = parsedWorkingDays.filter(
+      (dayID) => !existingDayIDs.includes(dayID)
+    );
+    const daysToRemove = existingDayIDs.filter(
+      (dayID) => !parsedWorkingDays.includes(dayID)
+    );
+
+    // Remove the old working days that are not in the new list
+    if (daysToRemove.length > 0) {
+      await pool.query(
+        'DELETE FROM "RestaurantWorkingDaysJunctions" WHERE "restaurantID" = $1 AND "workingDaysID" = ANY($2::int[])',
+        [restaurantId, daysToRemove]
+      );
+    }
+
+    // Add the new working days that are not in the existing list
+    if (daysToAdd.length > 0) {
+      const values = daysToAdd
+        .map((dayID) => `(${restaurantId}, ${dayID})`)
+        .join(",");
+      await pool.query(
+        `INSERT INTO "RestaurantWorkingDaysJunctions" ("restaurantID", "workingDaysID") VALUES ${values}`
+      );
+    }
+
+    console.log("workingDays updated successfully");
+
+    return 1;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
@@ -43,30 +83,6 @@ async function deleteWokringDays(restaurantId) {
     throw error;
   }
 }
-
-// async function setWorkingDayss(restaurantId, workingDays) {
-//   try {
-//     //     INSERT INTO "RestaurantWorkingDaysJunctions" ("restaurantID", "workingDaysID")
-//     // VALUES (1, 101), (1, 102), (2, 103), (3, 101);
-
-//     const sumWithInitial = workingDays.reduce(
-//       (accumulator, currentValue) =>
-//         accumulator + `(${restaurantId},${currentValue}),`,
-//       ""
-//     );
-
-//     console.log(sumWithInitial);
-
-//     const query = `INSERT INTO "RestaurantWorkingDaysJunctions" ("restaurantID", "workingDaysID") VALUES ${sumWithInitial.replace(/,(\s+)?$/, "")};`;
-//     console.log(query);
-//     // const values = workingDays.map((day) => [restaurantId, day]);
-//     // console.log(values);
-//     const res = await pool.query(query);
-//     return res.rows;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
 
 module.exports = {
   getWorkingDays,

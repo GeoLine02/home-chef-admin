@@ -1,6 +1,10 @@
 const restaurantService = require("../services/restaurant");
 const restaurantSettingsService = require("../services/restaurant.settings.service");
 const restaurantWorkingDaysService = require("../services/restaurant.workingDays.service");
+const restaurantAddressSerivce = require("../services/restaurant.address.service");
+const RestaurantContactsService = require("../services/restaurant.contacts.service");
+const restaurantTypesService = require("../services/restaurant.types");
+const restaurantAssetsService = require("../services/restaurant.assets.service");
 
 const getRestaurants = async (req, res) => {
   try {
@@ -83,21 +87,21 @@ const updateRestaurantByID = async (req, res) => {
       name,
       address,
       city,
+      countryId,
+      latitude,
+      longitude,
       email,
-      phoneNumber,
+      phone,
       ownerId,
-      img,
-      workingDays,
+      introImage,
+      coverImage,
       workingFrom,
       workingTill,
+      workingDays,
+      restaurantTypes,
     } = req.body;
 
-    if (!workingFrom || !workingTill) {
-      res.status(400).json({ message: "working Hours filds are missing" });
-    } else if (workingFrom >= workingTill) {
-      res.status(400).json({ message: "invalide working hours values" });
-    }
-
+    let img = req.file;
     if (!img) {
       img = null;
     } else {
@@ -111,15 +115,10 @@ const updateRestaurantByID = async (req, res) => {
 
     const updatedRestaurant = await restaurantService.updateRestaurantByID(
       restaurantID,
-      { name, address, city, email, phoneNumber, ownerId, img }
+      { name, ownerId, img }
     );
 
-    if (
-      workingFrom &&
-      workingTill &&
-      workingFrom < workingTill &&
-      updatedRestaurant
-    ) {
+    if (updatedRestaurant) {
       await Promise.all([
         restaurantWorkingDaysService.updateWorkingDays(
           restaurantID,
@@ -130,8 +129,33 @@ const updateRestaurantByID = async (req, res) => {
           workingFrom,
           workingTill
         ),
+        RestaurantContactsService.updateRestaurantContacts(
+          restaurantID,
+          email,
+          phone
+        ),
+        restaurantAddressSerivce.upateRestaurantAddress(
+          restaurantID,
+          countryId,
+          address,
+          latitude,
+          longitude,
+          city
+        ),
+        restaurantTypesService.updateRestaurantTypes(
+          restaurantID,
+          restaurantTypes
+        ),
+        restaurantAssetsService.updateRestaurantAssets(
+          restaurantID,
+          introImage,
+          coverImage
+        ),
       ]);
       res.status(201).json(updatedRestaurant);
+    } else {
+      console.log("finally", 0);
+      return 0;
     }
   } catch (error) {
     res.status(500).send("internal server error");
@@ -144,22 +168,22 @@ const createRestaurant = async (req, res) => {
       name,
       address,
       city,
+      countryId,
+      latitude,
+      longitude,
       email,
-      img,
-      phoneNumber,
+      phone,
       ownerId,
       workingFrom,
       workingTill,
       isRestaurantActive,
+      introImage,
+      coverImage,
       workingDays,
+      restaurantTypes,
     } = req.body;
 
-    if (!workingFrom || !workingTill) {
-      res.status(400).json({ message: "working Hours filds are missing" });
-    } else if (workingFrom >= workingTill) {
-      res.status(400).json({ message: "invalide working hours values" });
-    }
-
+    let img = req.file;
     if (!img) {
       img = null;
     } else {
@@ -173,38 +197,51 @@ const createRestaurant = async (req, res) => {
 
     const createdRestaurant = await restaurantService.createRestaurant({
       name,
-      address,
-      city,
-      email,
-      phoneNumber,
       ownerId,
       img,
     });
 
-    if (
-      workingFrom &&
-      workingTill &&
-      workingFrom < workingTill &&
-      createdRestaurant
-    ) {
+    if (createdRestaurant) {
       await Promise.all([
         restaurantSettingsService.setActiveHours(
           createdRestaurant.id,
           workingFrom,
           workingTill
         ),
-        restaurantSettingsService.changeRestaurantStatus(
-          isRestaurantActive,
-          createdRestaurant.id
+        RestaurantContactsService.createRestauratContacts(
+          createdRestaurant.id,
+          email,
+          phone
+        ),
+        restaurantAddressSerivce.createRestaurantAddress(
+          createdRestaurant.id,
+          countryId, // undefined
+          address,
+          latitude, // undefined
+          longitude, // undefined
+          city
         ),
         restaurantWorkingDaysService.setWorkingDays(
           createdRestaurant.id,
           workingDays
         ),
+        restaurantTypesService.setRestaurantTypes(
+          createdRestaurant.id,
+          restaurantTypes
+        ),
+        restaurantAssetsService.setRestaurantAssets(
+          createdRestaurant.id,
+          introImage,
+          coverImage
+        ),
       ]);
+
       res.status(201).json(createdRestaurant);
+    } else {
+      return 0;
     }
   } catch (error) {
+    console.log(error);
     res.status(500).send("internal server error");
   }
 };

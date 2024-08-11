@@ -1,10 +1,21 @@
 const userService = require("../services/user.service");
 const restaurantService = require("../services/restaurant");
 const restaurantTypesService = require("../services/restaurant.types");
-
+const userAddressService = require("../services/user.address.service");
 const getAllUsers = async (req, res) => {
   try {
-    const allUsers = await userService.getAllUsers();
+    const queryParams = req.query;
+    const page = +queryParams?.page || 1;
+    const limit = +queryParams?.limit || 10;
+    const search = queryParams.search || "";
+    const filterBy = queryParams.filterBy;
+
+    const allUsers = await userService.getAllUsers(
+      page,
+      limit,
+      filterBy,
+      search
+    );
     res.status(200).json(allUsers);
   } catch (error) {
     res.status(500).send("internal server error");
@@ -21,9 +32,50 @@ const getUserByID = async (req, res) => {
   }
 };
 
+const createUser = async (req, res) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      city,
+      street,
+      neighborhood,
+      password,
+      role,
+    } = req.body;
+    const createdUser = await userService.createUser(
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      password,
+      role
+    );
+
+    if (createdUser) {
+      Promise.all([
+        userAddressService.createUserAddress(
+          city,
+          street,
+          neighborhood,
+          createdUser.id
+        ),
+      ]);
+      res.status(201).json(createdUser);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("internal server error");
+  }
+};
+
 const deleteUserByID = async (req, res) => {
   try {
     const userId = req.params.id;
+
+    console.log(userId);
 
     if (!userId) {
       res.status(404).send(`user with ${userId} does not exist`);
@@ -42,15 +94,19 @@ const deleteUserByID = async (req, res) => {
 const updateUserByID = async (req, res) => {
   try {
     const userID = req.params.id;
-    const { email, firstName, lastName, phoneNumber, isAccountActive, role } =
-      req.body;
+    const { email, firstName, lastName, phoneNumber } = req.body;
+
+    console.log(email, firstName, lastName, phoneNumber);
 
     if (!userID) {
       res
         .status(404)
         .json({ message: `User with id ${userID} does not exist` });
-    } else if (!email || !firstName || !lastName || !phoneNumber || !role) {
-      res.status(400).json({ message: "user credentials are missing" });
+    }
+
+    if (!email || !firstName || !lastName || !phoneNumber) {
+      console.log("enterrsss");
+      res.status(400).json({ message: "User credentials are missing" });
     }
 
     const updatedUser = await userService.updateUserByID(
@@ -59,15 +115,14 @@ const updateUserByID = async (req, res) => {
         firstName,
         lastName,
         phoneNumber,
-        isAccountActive,
-        role,
       },
       userID
     );
-    res.status(200).json(updatedUser);
+
+    res.status(201).json(updatedUser);
   } catch (error) {
     console.log(error);
-    res.status(500).send("internal server error");
+    return res.status(500).send("Internal server error");
   }
 };
 
@@ -104,5 +159,6 @@ module.exports = {
   deleteUserByID,
   updateUserByID,
   updateUserStatus,
+  createUser,
   searchUserByID,
 };
