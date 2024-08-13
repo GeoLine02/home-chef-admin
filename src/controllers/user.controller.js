@@ -34,17 +34,8 @@ const getUserByID = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const {
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-      city,
-      street,
-      neighborhood,
-      password,
-      role,
-    } = req.body;
+    const { firstName, lastName, email, phoneNumber, password, role } =
+      req.body;
     const createdUser = await userService.createUser(
       firstName,
       lastName,
@@ -55,14 +46,6 @@ const createUser = async (req, res) => {
     );
 
     if (createdUser) {
-      Promise.all([
-        userAddressService.createUserAddress(
-          city,
-          street,
-          neighborhood,
-          createdUser.id
-        ),
-      ]);
       res.status(201).json(createdUser);
     }
   } catch (error) {
