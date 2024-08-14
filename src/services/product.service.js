@@ -12,6 +12,9 @@ async function getAllProducts(page, limit, filterBy, search) {
     if (filterBy === "productName") {
       query += ` WHERE "Products"."productName" = ${search}`;
     }
+    if (limit && page) {
+      query += ` LIMIT ${limit} OFFSET ${offset}`;
+    }
     const [result, totalRecords] = await Promise.all([
       pool.query(query),
       pool.query(totalDataCount),
