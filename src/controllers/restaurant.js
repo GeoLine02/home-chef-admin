@@ -163,6 +163,7 @@ const updateRestaurantByID = async (req, res) => {
 };
 
 const createRestaurant = async (req, res) => {
+  console.log(req.body);
   try {
     let {
       name,
@@ -177,8 +178,8 @@ const createRestaurant = async (req, res) => {
       workingFrom,
       workingTill,
       isRestaurantActive,
-      introImage,
-      coverImage,
+      imageIntro,
+      imageCover,
       workingDays,
       restaurantTypes,
     } = req.body;
@@ -231,8 +232,8 @@ const createRestaurant = async (req, res) => {
         ),
         restaurantAssetsService.setRestaurantAssets(
           createdRestaurant.id,
-          introImage,
-          coverImage
+          imageIntro,
+          imageCover
         ),
       ]);
 

@@ -12,9 +12,8 @@ async function getRestaurantTypes() {
 
 async function setRestaurantTypes(restaurantId, restaurntTypes) {
   try {
-    const parsedRestaurantTypes = JSON.parse(restaurntTypes);
     const query = `INSERT INTO "RestaurantTypesJunctions" ("restaurantID", "typeID") SELECT $1, unnest($2::int[])`;
-    const res = await pool.query(query, [restaurantId, parsedRestaurantTypes]);
+    const res = await pool.query(query, [restaurantId, restaurntTypes]);
     if (res) {
       console.log("RestaurantTypesJunctions", 1);
       return 1;
