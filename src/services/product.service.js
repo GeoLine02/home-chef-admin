@@ -55,7 +55,7 @@ async function createProduct({
   productPrice,
 }) {
   try {
-    const query = `INSERT INTO "Products" ("restaurantID", "productName", "productDescription", "productComposition", "productPhoto", "productPrice") VALUES ($1, $2, $3, $4, $5, $6)`;
+    const query = `INSERT INTO "Products" ("restaurantID", "productName", "productDescription", "productComposition", "productPhoto", "productPrice") VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
     const res = await pool.query(
       query,
 
@@ -68,7 +68,7 @@ async function createProduct({
         productPrice,
       ]
     );
-    return res.rows;
+    return res.rows[0];
   } catch (error) {
     throw error;
   }
