@@ -100,7 +100,7 @@ const updateRestaurantByID = async (req, res) => {
       workingDays,
       restaurantTypes,
     } = req.body;
-
+    console.log(name);
     let img = req.file;
     if (!img) {
       img = null;
@@ -117,7 +117,7 @@ const updateRestaurantByID = async (req, res) => {
       restaurantID,
       { name, ownerId, img }
     );
-
+    console.log(name);
     if (updatedRestaurant) {
       await Promise.all([
         restaurantWorkingDaysService.updateWorkingDays(

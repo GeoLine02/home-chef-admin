@@ -85,7 +85,7 @@ async function updateProductByID(
   }
 ) {
   try {
-    const query = `UPDATE "Products" SET "productName" = $1, "productDescription" = $2, "productComposition" = $3, "productPhoto" = $4, "productPrice" = $5 WHERE id = $6`;
+    const query = `UPDATE "Products" SET "productName" = $1, "productDescription" = $2, "productComposition" = $3, "productPhoto" = $4, "productPrice" = $5 WHERE id = $6 RETURNING *`;
     const res = await pool.query(query, [
       productName,
       productDescription,

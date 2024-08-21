@@ -23,7 +23,7 @@ const getAllProducts = async (req, res) => {
 const getProductByID = async (req, res) => {
   try {
     const restaurnatId = req.params.id;
-    if (restaurnatId) {
+    if (!restaurnatId) {
       res.status(404).json({
         message: `products for restaurant ${restaurnatId} does not exist`,
       });
@@ -91,15 +91,8 @@ const updateProductById = async (req, res) => {
 
     if (!productPhoto) {
       productPhoto = null;
-    } else {
-      productPhoto =
-        req.protocol +
-        "://" +
-        req.get("host") +
-        "/static/images/" +
-        req.file.filename;
     }
-
+    console.log(req.body);
     const upadetedProduct = await productSeriveces.updateProductByID(
       productID,
       {

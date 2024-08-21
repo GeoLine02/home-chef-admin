@@ -4,7 +4,7 @@ async function getRestaurants(page, limit, filterBy, search) {
   try {
     let offset = Number(page - 1) * limit;
 
-    let restaurantsQuery = `SELECT "Restaurants".*, "RestaurantContacts".email, "RestaurantContacts".phone FROM"Restaurants" JOIN "RestaurantContacts" ON "Restaurants".id = "RestaurantContacts"."restaurantID"`;
+    let restaurantsQuery = `SELECT "Restaurants".*, "RestaurantContacts".email, "RestaurantContacts".phone FROM "Restaurants" JOIN "RestaurantContacts" ON "Restaurants".id = "RestaurantContacts"."restaurantID"`;
 
     const totalDataCount = `SELECT COUNT(*) FROM "Restaurants"`;
 
@@ -50,7 +50,8 @@ async function getRestaurantByID(restaurantId) {
         "Restaurants".*, 
         "RestaurantContacts".*, 
         "RestaurantAddress".*,
-        "RestaurantSettings".*, 
+        "RestaurantSettings".*,
+        "RestaurantAssets".*, 
         (
             SELECT array_agg("RestaurantWorkingDaysJunctions"."workingDaysID")
             FROM "RestaurantWorkingDaysJunctions"
@@ -65,6 +66,7 @@ async function getRestaurantByID(restaurantId) {
     JOIN "RestaurantContacts" ON "Restaurants".id = "RestaurantContacts"."restaurantID"
     JOIN "RestaurantAddress" ON "Restaurants".id = "RestaurantAddress"."restaurantID"
     JOIN "RestaurantSettings" ON "Restaurants".id = "RestaurantSettings"."restaurantID"
+    JOIN "RestaurantAssets" ON  "Restaurants".id = "RestaurantAssets"."restaurantID"
     WHERE "Restaurants".id = $1;
 `;
     const res = await pool.query(query, [restaurantId]);
@@ -106,6 +108,7 @@ async function deleteRestaurantByID(restaurantId) {
 
 async function updateRestaurantByID(restaurantId, { name, ownerId, img }) {
   try {
+    console.log("@@@@@@@@@@@@@@name", name);
     const query = `UPDATE "Restaurants" SET name = $1, "ownerId" = $2, img = $3 WHERE id = $4`;
     const res = await pool.query(query, [name, ownerId, img, restaurantId]);
     return res.rows;

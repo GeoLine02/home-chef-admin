@@ -29,7 +29,6 @@ async function setWorkingDays(restaurantId, workingDays) {
 
 async function updateWorkingDays(restaurantId, workingDays) {
   try {
-    const parsedWorkingDays = JSON.parse(workingDays);
     const existingWorkingDaysResult = await pool.query(
       'SELECT "workingDaysID" FROM "RestaurantWorkingDaysJunctions" WHERE "restaurantID" = $1',
       [restaurantId]
@@ -40,11 +39,11 @@ async function updateWorkingDays(restaurantId, workingDays) {
     );
 
     // Determine the days to add and to remove
-    const daysToAdd = parsedWorkingDays.filter(
+    const daysToAdd = workingDays.filter(
       (dayID) => !existingDayIDs.includes(dayID)
     );
     const daysToRemove = existingDayIDs.filter(
-      (dayID) => !parsedWorkingDays.includes(dayID)
+      (dayID) => !workingDays.includes(dayID)
     );
 
     // Remove the old working days that are not in the new list
