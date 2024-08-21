@@ -12,9 +12,8 @@ async function getWorkingDays() {
 
 async function setWorkingDays(restaurantId, workingDays) {
   try {
-    const parsedWorkingDays = JSON.parse(workingDays);
     const query = `INSERT INTO "RestaurantWorkingDaysJunctions" ("restaurantID", "workingDaysID") SELECT $1, unnest($2::int[])`;
-    const res = await pool.query(query, [restaurantId, parsedWorkingDays]);
+    const res = await pool.query(query, [restaurantId, workingDays]);
     if (res) {
       console.log("RestaurantWorkingDaysJunctions", 1);
       return 1;
