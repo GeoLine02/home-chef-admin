@@ -46,17 +46,6 @@ const createProduct = async (req, res) => {
       productPrice,
     } = req.body;
 
-    if (!productPhoto) {
-      productPhoto = null;
-    } else {
-      productPhoto =
-        req.protocol +
-        "://" +
-        req.get("host") +
-        "/static/images/" +
-        req.file.filename;
-    }
-
     await productSeriveces.createProduct({
       restaurantID,
       productName,
