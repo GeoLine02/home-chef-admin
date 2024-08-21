@@ -46,7 +46,7 @@ const createProduct = async (req, res) => {
       productPrice,
     } = req.body;
 
-    await productSeriveces.createProduct({
+    const createdProduct = await productSeriveces.createProduct({
       restaurantID,
       productName,
       productDescription,
@@ -54,7 +54,9 @@ const createProduct = async (req, res) => {
       productPhoto,
       productPrice,
     });
-    res.status(200).json({ message: "product created succesfully" });
+    if (createdProduct) {
+      res.status(200).json(createdProduct);
+    }
   } catch (error) {
     res.status(500).send("internal server error");
   }
@@ -81,7 +83,6 @@ const updateProductById = async (req, res) => {
     if (!productPhoto) {
       productPhoto = null;
     }
-    console.log(req.body);
     const upadetedProduct = await productSeriveces.updateProductByID(
       productID,
       {
