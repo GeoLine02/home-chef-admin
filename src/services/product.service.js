@@ -4,7 +4,7 @@ async function getAllProducts(page, limit, filterBy, search) {
   try {
     let offset = Number(page - 1) * limit;
 
-    let query = `SELECT * FROM "Products"`;
+    let query = `SELECT * FROM "Products" ORDER BY id ASC`;
     const totalDataCount = `SELECT COUNT(*) FROM "Products"`;
     if (filterBy === "id") {
       query += ` WHERE "Products"."restaurantID" = ${search}`;
@@ -32,7 +32,7 @@ async function getAllProducts(page, limit, filterBy, search) {
       },
     };
   } catch (error) {
-    throw error;
+    console.log(error);
   }
 }
 
